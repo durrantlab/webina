@@ -10,12 +10,12 @@ export function setup(): void {
             <div class="container-fluid">
                 <open-modal></open-modal>
                 <div id="no-mobile">
-                    <b-jumbotron header="Webina" lead="AutoDock Vina Ported to WebAssembly">
+                    <b-jumbotron class="jumbo" header="Webina" lead="AutoDock Vina Ported to WebAssembly">
                         <p>Webina is not designed to work on mobile phones. Please use a device with a larger screen.</p>
                     </b-jumbotron>
                 </div>
 
-                <b-jumbotron header="Webina" lead="AutoDock Vina Ported to WebAssembly">
+                <b-jumbotron class="jumbo" header="Webina" lead="AutoDock Vina Ported to WebAssembly">
                     <p>Brought to you by the Durrant Lab.</p>
                     <b-button variant="primary" target="_blank" href="http://durrantlab.com">More Info</b-button>
                 </b-jumbotron>

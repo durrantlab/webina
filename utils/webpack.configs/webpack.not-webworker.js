@@ -57,6 +57,10 @@ module.exports = merge(common, {
             //     from: 'src/Webina/vina.worker.js',
             //     to: 'vina.worker.js'
             // },
+            // {
+            //     from: 'src/UI/webina_logo.jpg',
+            //     to: 'webina_logo.jpg'
+            // },
             {
                 from: 'src/styles/favicon.ico',
                 to: 'favicon.ico'
@@ -107,6 +111,10 @@ module.exports = merge(common, {
                 test: /\.pdbqt$/i,
                 use: 'raw-loader',
             },
+            {
+                test: /\.(gif|svg|jpg|png)$/,
+                loader: "file-loader",
+            }
         ]
     },
     output: {
