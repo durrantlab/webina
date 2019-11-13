@@ -1,5 +1,7 @@
 // There are a few variables and functions from vina.js that I want to easily
 // access from here.
+var VERSION = "1.0.0"; // Replaced by compile script.
+console.log("Webina JavaScript Library " + VERSION);
 var WEBINA_Module;
 // A shiv for decodeBase64.
 var decodeBase64 = "function" == typeof atob ? atob : function (r) {

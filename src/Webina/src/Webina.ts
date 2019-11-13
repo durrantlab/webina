@@ -1,6 +1,9 @@
 // There are a few variables and functions from vina.js that I want to easily
 // access from here.
 
+let VERSION = "XXXXXXXXXXXXX.X"  // Replaced by compile script.
+console.log("Webina JavaScript Library " + VERSION);
+
 var WEBINA_Module: any
 
 interface IVinaParams {

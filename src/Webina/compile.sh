@@ -19,3 +19,7 @@ node ../../node_modules/google-closure-compiler/cli.js --js=dist/vina.worker.js 
 
 # All min.js files should refer to other min.js files.
 ls dist/*.min.js | awk '{print "cat " $1 " | sed \"s/\\.js/.min.js/g\" > t; mv t " $1}' | bash
+
+# Fix version
+export WEBINA_VERSION=`cat ../Version.ts  | grep VERSION | awk '{print $5}' | sed 's/"//g' | sed "s/;//g"`
+grep -l "XXXXXXXXXXXXX.X" dist/* | awk '{print "cat " $1 " | sed \"s/XXXXXXXXXXXXX.X/TMPSTR/g\" > t; mv t " $1}' | sed "s/TMPSTR/${WEBINA_VERSION}/g" | bash
