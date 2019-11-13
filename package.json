@@ -1,0 +1,48 @@
+{
+    "name": "webina",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build_old": "utils/build/before.sh; webpack --config ./utils/webpack.configs/webpack.prod.js; utils/build/after_build.sh",
+        "build": "export NODE_OPTIONS=--max_old_space_size=4096; webpack --config ./utils/webpack.configs/webpack.prod.js",
+        "start": "utils/build/before.sh; webpack-dashboard -- webpack-dev-server --open --config ./utils/webpack.configs/webpack.dev.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/jquery": "^3.3.31",
+        "clean-webpack-plugin": "^3.0.0",
+        "closure-webpack-plugin": "^2.0.1",
+        "copy-webpack-plugin": "^5.0.4",
+        "css-loader": "^3.2.0",
+        "duplicate-package-checker-webpack-plugin": "^3.0.0",
+        "google-closure-compiler": "^20190929.0.0",
+        "html-webpack-plugin": "^3.2.0",
+        "jquery": "^3.4.1",
+        "mini-css-extract-plugin": "^0.8.0",
+        "optimize-css-assets-webpack-plugin": "^5.0.3",
+        "raw-loader": "^3.1.0",
+        "style-loader": "^1.0.0",
+        "ts-loader": "^6.2.0",
+        "typescript": "^3.6.3",
+        "vuex": "^3.1.1",
+        "webpack": "^4.41.0",
+        "webpack-bundle-analyzer": "^3.5.2",
+        "webpack-cli": "^3.3.9",
+        "webpack-dashboard": "^3.2.0",
+        "webpack-dev-server": "^3.8.2",
+        "webpack-merge": "^4.2.2",
+        "worker-loader": "^2.0.0"
+    },
+    "dependencies": {
+        "3dmol": "^1.4.0",
+        "bootstrap": "^4.3.1",
+        "bootstrap-vue": "^2.0.2",
+        "file-saver": "^2.0.2",
+        "popper.js": "^1.15.0",
+        "vue": "^2.6.10"
+    }
+}
