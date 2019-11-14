@@ -2,3 +2,11 @@ node_modules
 old_delme
 .DS_Store
 testing_openbabel
+*.swp
+TODO.md
+rsync.sh
+src/Webina/notes.txt
+src/Webina/src/new/
+src/Webina/src/orig/
+src/example/small/
+src/example/src/

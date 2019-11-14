@@ -34,3 +34,11 @@ export function isFirefox(): boolean {
     // See https://stackoverflow.com/questions/7000190/detect-all-firefox-versions-in-js
     return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 }
+
+export function curPath(): string {
+    let url = window.location.pathname.replace("index.html", "");
+    if (url.slice(url.length - 1) !== "/") {
+        url = url + "/";
+    }
+    return url;
+}

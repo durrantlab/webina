@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build_old": "utils/build/before.sh; webpack --config ./utils/webpack.configs/webpack.prod.js; utils/build/after_build.sh",
-        "build": "export NODE_OPTIONS=--max_old_space_size=4096; webpack --config ./utils/webpack.configs/webpack.prod.js",
+        "build": "export NODE_OPTIONS=--max_old_space_size=4096; utils/build/before.sh; webpack --config ./utils/webpack.configs/webpack.prod.js; utils/build/after_build.sh",
         "start": "utils/build/before.sh; webpack-dashboard -- webpack-dev-server --open --config ./utils/webpack.configs/webpack.dev.js"
     },
     "keywords": [],

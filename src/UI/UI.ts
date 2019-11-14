@@ -1,4 +1,5 @@
 import * as Store from "../Vue/Store";
+import * as Utils from "../Utils";
 
 declare var Vue;
 
@@ -15,7 +16,7 @@ export function setup(): void {
                     </b-jumbotron>
                 </div>
 
-                <b-jumbotron class="jumbo" header="Webina" lead="AutoDock Vina Ported to WebAssembly">
+                <b-jumbotron class="jumbo" style="background-image:url(${Utils.curPath()}webina_logo.jpg);" header="Webina" lead="AutoDock Vina Ported to WebAssembly">
                     <p>Brought to you by the Durrant Lab.</p>
                     <b-button variant="primary" target="_blank" href="http://durrantlab.com">More Info</b-button>
                 </b-jumbotron>
@@ -88,6 +89,15 @@ export function setup(): void {
 
         "methods": {},
         "mounted"() {
+            // Also add image to the jumbotron. Doing it here instead of in css
+            // because otherwise doesn't work when you put webina in a subdirectory.
+            // let t = jQuery(".jumbo");
+            // t.css("color", "red");
+            // console.log(t.css("color"))
+            // // debugger;
+            // jQuery(".jumbo").css("background-image", "webina_logo.jpg");
+
+
             window["$store"] = this.$store;  // For debugging
         }
     })

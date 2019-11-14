@@ -26,7 +26,7 @@ module.exports = merge(common, {
         new HtmlWebpackPlugin({
             title: 'Webina',
             template: path.join(__dirname, '../../src/index.html'),
-            // favicon: ???
+            favicon: path.join(__dirname, '../../src/styles/favicon.ico'),
             minify: true,
             excludeAssets: [/vrmlWebWorker.*.js/]
         }),
@@ -57,16 +57,16 @@ module.exports = merge(common, {
             //     from: 'src/Webina/vina.worker.js',
             //     to: 'vina.worker.js'
             // },
+            {
+                from: 'src/styles/webina_logo.jpg',
+                to: 'webina_logo.jpg'
+            },
             // {
-            //     from: 'src/UI/webina_logo.jpg',
-            //     to: 'webina_logo.jpg'
+            //     from: 'src/styles/favicon.ico',
+            //     to: 'favicon.ico'
             // },
             {
-                from: 'src/styles/favicon.ico',
-                to: 'favicon.ico'
-            },
-            {
-                from: 'node_modules/vue/dist/vue.js',  // min in prod
+                from: 'node_modules/vue/dist/vue.min.js', // min in prod
                 to: 'vue.min.js'
             },
             {
@@ -96,8 +96,8 @@ module.exports = merge(common, {
     ],
     module: {
         rules: [{
-            test: /\.css$/,
-            use: [{
+                test: /\.css$/,
+                use: [{
                     loader: MiniCssExtractPlugin.loader,
                     options: {
                         // you can specify a publicPath here
@@ -125,19 +125,40 @@ module.exports = merge(common, {
         filename: "[name].[hash].js" // contenthash
     },
     optimization: {
-        // Below breaks webworker, because calls window from within it.
-        // Really, we need separrate compiles for webworker and main.
         moduleIds: 'hashed',
         splitChunks: {
-            chunks: 'all',
+            chunks: 'async',
+            minSize: 30000,
+            maxSize: 0,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            automaticNameDelimiter: '~',
+            automaticNameMaxLength: 30,
+            name: true,
             cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    chunks: 'all'
+            vendor: {
+                test: /[\\/]node_modules[\\/]/,
+                name: 'vendors',
+                chunks: 'all'
+            },
+            default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
                 }
             }
         },
+        // splitChunks: {
+        //     chunks: 'all',
+        //     cacheGroups: {
+        //         vendor: {
+        //             test: /[\\/]node_modules[\\/]/,
+        //             name: 'vendors',
+        //             chunks: 'all'
+        //         }
+        //     }
+        // },
         runtimeChunk: 'single'
     }
 });

@@ -353,9 +353,9 @@ export function setup(): void {
                                         "startOverTabDisabled": false
                                     });
 
-                                    this.showWebinaError(errObj.message);
+                                    this.showWebinaError(errObj["message"]);
                                 },
-                                window.location.pathname.replace("index.html", "") + "Webina/"
+                                Utils.curPath() + "Webina/"
                             )
                         });
                     });

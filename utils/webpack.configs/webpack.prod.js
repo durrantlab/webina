@@ -29,9 +29,22 @@ let forProd = {
                 // formatting: 'PRETTY_PRINT',
             })
         ],
-
-        splitChunks: { // Does NOT break webworker. Interesting...
+        splitChunks: {
+            chunks: 'async',
+            minSize: 30000,
+            maxSize: 0,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            automaticNameDelimiter: '~',
+            automaticNameMaxLength: 30,
+            name: true,
             cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all'
+                },
                 styles: {
                     // Only 1 CSS file.
                     name: 'styles',
@@ -39,11 +52,27 @@ let forProd = {
                     chunks: 'all',
                     enforce: true,
                 },
-                commons: {
-                    minChunks: 2
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
                 }
-            },
+            }
         },
+        // splitChunks: { // Does NOT break webworker. Interesting...
+        //     cacheGroups: {
+        //         styles: {
+        //             // Only 1 CSS file.
+        //             name: 'styles',
+        //             test: /\.css$/,
+        //             chunks: 'all',
+        //             enforce: true,
+        //         },
+        //         commons: {
+        //             minChunks: 2
+        //         }
+        //     },
+        // },
     }
 }
 

@@ -591,12 +591,16 @@ if (ENVIRONMENT_IS_PTHREAD) {} else {
     if (WEBINA_Module["wasmMemory"]) {
         wasmMemory = WEBINA_Module["wasmMemory"]
     } else {
-        wasmMemory = new WebAssembly.Memory({
-            "initial": INITIAL_TOTAL_MEMORY / WASM_PAGE_SIZE,
-            "maximum": INITIAL_TOTAL_MEMORY / WASM_PAGE_SIZE,
-            "shared": true
-        });
-        WEBINA_assert(wasmMemory.buffer instanceof SharedArrayBuffer, "requested a shared WebAssembly.Memory but the returned buffer is not a SharedArrayBuffer, indicating that while the browser has SharedArrayBuffer it does not have WebAssembly threads support - you may need to set a flag")
+        try {
+            wasmMemory = new WebAssembly.Memory({
+                "initial": INITIAL_TOTAL_MEMORY / WASM_PAGE_SIZE,
+                "maximum": INITIAL_TOTAL_MEMORY / WASM_PAGE_SIZE,
+                "shared": true
+            });
+            WEBINA_assert(wasmMemory.buffer instanceof SharedArrayBuffer, "requested a shared WebAssembly.Memory but the returned buffer is not a SharedArrayBuffer, indicating that while the browser has SharedArrayBuffer it does not have WebAssembly threads support - you may need to set a flag")
+        } catch(error) {
+            WEBINA_Module["catchError"]({"message": "Problem using shared memory, likely because your browser does not have WebAssembly threads support. Please use a different browser, such as Google Chrome."});
+        }
     }
 }
 if (wasmMemory) {

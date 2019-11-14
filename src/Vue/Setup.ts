@@ -18,6 +18,7 @@ import * as FormButton from "../UI/Forms/FormButton";
 declare var Vue;
 declare var Vuex;
 declare var BootstrapVue;
+declare var jQuery;
 
 export function setup(): void {
     Vue.use(BootstrapVue)
