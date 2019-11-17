@@ -1,3 +1,21 @@
+/**
+ * Webina Copyright 2019 Jacob Durrant
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// This file is part of Webina, released under the Apache 2.0 License. See
+// LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
+// details. Copyright 2019 Jacob D. Durrant.
 // There are a few variables and functions from vina.js that I want to easily
 // access from here.
 var VERSION = "1.0.0"; // Replaced by compile script.
@@ -21,15 +39,36 @@ var Webina = (function () {
         WEBINA_BASE_URL: "./",
         FS: window["FS"],
         start: function start(vinaParams, receptorPDBQTTxt, ligandPDBQTTxt, onDone, onError, baseUrl) {
+            var _this = this;
+            // baseUrl = undefined;  // For debugging.
+            var baseUrlMsg = "\nWEBINA\n======\n\n";
             if (baseUrl !== undefined) {
                 if (baseUrl.slice(baseUrl.length - 1) !== "/") {
                     baseUrl += "/";
                 }
                 this.WEBINA_BASE_URL = baseUrl;
-                console.log("Webina: Using baseUrl = " + baseUrl);
+                baseUrlMsg += "User specified baseUrl: " + baseUrl + "\n";
             }
             else {
-                console.warn("Webina: No baseUrl specified, so using the main directory ./");
+                baseUrlMsg += "No baseUrl specified, so using ./\n\n";
+                baseUrlMsg += "Use Webina.start() to specify the baseUrl:\n";
+                baseUrlMsg += "    function start(vinaParams, receptorPDBQTTxt, \n";
+                baseUrlMsg += "                   ligandPDBQTTxt, onDone, \n";
+                baseUrlMsg += "                   onError, baseUrl)\n";
+            }
+            baseUrlMsg += "\nExpecting files at the following locations:\n";
+            for (var i = 0; i < 5; i++) {
+                var fileName = ["Webina.min.js", "vina.html.mem",
+                    "vina.min.js", "vina.worker.min.js",
+                    "vina.wasm"][i];
+                baseUrlMsg += "    " + (baseUrl === undefined ? "./" : baseUrl) + fileName + "\n";
+            }
+            baseUrlMsg += "\n";
+            if (baseUrl !== undefined) {
+                console.log(baseUrlMsg);
+            }
+            else {
+                console.warn(baseUrlMsg);
             }
             if (onError === undefined) {
                 onError = function () {
@@ -72,11 +111,6 @@ var Webina = (function () {
                 "receptorPDBQTTxt": receptorPDBQTTxt,
                 "ligandPDBQTTxt": ligandPDBQTTxt
             };
-            // Initialize the memory
-            var memoryInitializer = this.WEBINA_BASE_URL + "vina.html.mem";
-            memoryInitializer = WEBINA_Module["locateFile"] ? WEBINA_Module["locateFile"](memoryInitializer, "") : memoryInitializer, WEBINA_Module["memoryInitializerRequestURL"] = memoryInitializer;
-            var meminitXHR = WEBINA_Module["memoryInitializerRequest"] = new XMLHttpRequest;
-            meminitXHR.open("GET", memoryInitializer, !0), meminitXHR.responseType = "arraybuffer", meminitXHR.send(null);
             if (vinaParams["receptor"] !== undefined) {
                 console.warn("Webina does not support Vina's --receptor parameter. Instead, pass the content of the receptor file as a string to the webina.start() function.");
             }
@@ -106,9 +140,25 @@ var Webina = (function () {
                 }
             }
             window["WEBINA_Module"] = WEBINA_Module;
-            var script = document.createElement("script");
-            script.src = this.WEBINA_BASE_URL + "vina.js";
-            document.body.appendChild(script);
+            // Initialize the memory
+            var memoryInitializer = this.WEBINA_BASE_URL + "vina.html.mem";
+            memoryInitializer = WEBINA_Module["locateFile"] ? WEBINA_Module["locateFile"](memoryInitializer, "") : memoryInitializer, WEBINA_Module["memoryInitializerRequestURL"] = memoryInitializer;
+            var meminitXHR = WEBINA_Module["memoryInitializerRequest"] = new XMLHttpRequest;
+            meminitXHR.onloadend = function () {
+                if (meminitXHR.status === 404) {
+                    var msg = "Unable to access " + memoryInitializer + ". See JavaScript console for warnings. The \"baseUrl\" variable passed to Webina is likely incorrect.";
+                    WEBINA_Module["catchError"]({ "message": msg });
+                    console.warn(msg);
+                }
+                else {
+                    var script = document.createElement("script");
+                    script.src = _this.WEBINA_BASE_URL + "vina.js";
+                    document.body.appendChild(script);
+                }
+            };
+            meminitXHR.open("GET", memoryInitializer, !0);
+            meminitXHR.responseType = "arraybuffer";
+            meminitXHR.send(null);
         },
         isDataURI: function (r) {
             return String.prototype.startsWith ? r.startsWith(this.WEBINA_DATA_URI_PREFIX) : 0 === r.indexOf(this.WEBINA_DATA_URI_PREFIX);

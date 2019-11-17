@@ -58,15 +58,34 @@ let Webina = (function() {
         FS: window["FS"],
 
         start: function start(vinaParams: IVinaParams, receptorPDBQTTxt: string, ligandPDBQTTxt: string, onDone?: any, onError?: any, baseUrl?: string): void {
-
+            // baseUrl = undefined;  // For debugging.
+            let baseUrlMsg = "\nWEBINA\n======\n\n";
             if (baseUrl !== undefined) {
                 if (baseUrl.slice(baseUrl.length - 1) !== "/") {
                     baseUrl += "/";
                 }
                 this.WEBINA_BASE_URL = baseUrl;
-                console.log("Webina: Using baseUrl = " + baseUrl);
+                baseUrlMsg += "User specified baseUrl: " + baseUrl + "\n";
             } else {
-                console.warn("Webina: No baseUrl specified, so using the main directory ./")
+                baseUrlMsg += "No baseUrl specified, so using ./\n\n";
+                baseUrlMsg += "Use Webina.start() to specify the baseUrl:\n";
+                baseUrlMsg += "    function start(vinaParams, receptorPDBQTTxt, \n"
+                baseUrlMsg += "                   ligandPDBQTTxt, onDone, \n";
+                baseUrlMsg += "                   onError, baseUrl)\n";
+            }
+            baseUrlMsg += "\nExpecting files at the following locations:\n";
+            for (let i = 0; i < 5; i++) {
+                const fileName = ["Webina.min.js", "vina.html.mem",
+                                  "vina.min.js", "vina.worker.min.js",
+                                  "vina.wasm"][i];
+                baseUrlMsg += "    " + (baseUrl === undefined ? "./" : baseUrl) + fileName + "\n";
+            }
+            baseUrlMsg += "\n";
+
+            if (baseUrl !== undefined) {
+                console.log(baseUrlMsg);
+            } else {
+                console.warn(baseUrlMsg);
             }
 
             if (onError === undefined) {
@@ -118,13 +137,6 @@ let Webina = (function() {
                 "ligandPDBQTTxt": ligandPDBQTTxt
             };
 
-            // Initialize the memory
-            let memoryInitializer = this.WEBINA_BASE_URL + "vina.html.mem";
-            memoryInitializer = WEBINA_Module["locateFile"] ? WEBINA_Module["locateFile"](memoryInitializer, "") : memoryInitializer, WEBINA_Module["memoryInitializerRequestURL"] = memoryInitializer;
-
-            let meminitXHR = WEBINA_Module["memoryInitializerRequest"] = new XMLHttpRequest;
-            meminitXHR.open("GET", memoryInitializer, !0), meminitXHR.responseType = "arraybuffer", meminitXHR.send(null);
-
             if (vinaParams["receptor"] !== undefined) {
                 console.warn("Webina does not support Vina's --receptor parameter. Instead, pass the content of the receptor file as a string to the webina.start() function.");
             }
@@ -161,9 +173,27 @@ let Webina = (function() {
 
             window["WEBINA_Module"] = WEBINA_Module;
 
-            var script = document.createElement("script");
-            script.src = this.WEBINA_BASE_URL + "vina.js";
-            document.body.appendChild(script)
+            // Initialize the memory
+            let memoryInitializer = this.WEBINA_BASE_URL + "vina.html.mem";
+            memoryInitializer = WEBINA_Module["locateFile"] ? WEBINA_Module["locateFile"](memoryInitializer, "") : memoryInitializer, WEBINA_Module["memoryInitializerRequestURL"] = memoryInitializer;
+
+            let meminitXHR = WEBINA_Module["memoryInitializerRequest"] = new XMLHttpRequest;
+
+            meminitXHR.onloadend = () => {
+                if (meminitXHR.status === 404) {
+                    let msg = "Unable to access " + memoryInitializer +". See JavaScript console for warnings. The \"baseUrl\" variable passed to Webina is likely incorrect.";
+                    WEBINA_Module["catchError"]({"message": msg});
+                    console.warn(msg);
+                } else {
+                    var script = document.createElement("script");
+                    script.src = this.WEBINA_BASE_URL + "vina.js";
+                    document.body.appendChild(script)
+                }
+            }
+
+            meminitXHR.open("GET", memoryInitializer, !0);
+            meminitXHR.responseType = "arraybuffer";
+            meminitXHR.send(null);
         },
 
         isDataURI: function(r) {
