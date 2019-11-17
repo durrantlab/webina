@@ -1,3 +1,18 @@
+/**
+ * Webina Copyright 2019 Jacob Durrant
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 (function(){'use strict';function C(m){var e=0;return function(){return e<m.length?{done:!1,value:m[e++]}:{done:!0}}}function D(m){var e="undefined"!=typeof Symbol&&Symbol.iterator&&m[Symbol.iterator];return e?e.call(m):{next:C(m)}}var E="undefined"!=typeof window&&window===this?this:"undefined"!=typeof global&&null!=global?global:this,F="function"==typeof Object.defineProperties?Object.defineProperty:function(m,e,g){m!=Array.prototype&&m!=Object.prototype&&(m[e]=g.value)};
 function G(m,e){if(e){var g=E;m=m.split(".");for(var n=0;n<m.length-1;n++){var r=m[n];r in g||(g[r]={});g=g[r]}m=m[m.length-1];n=g[m];e=e(n);e!=n&&null!=e&&F(g,m,{configurable:!0,writable:!0,value:e})}}
 G("Promise",function(m){function e(b){this.i=0;this.o=void 0;this.g=[];var d=this.j();try{b(d.resolve,d.reject)}catch(a){d.reject(a)}}function g(){this.g=null}function n(b){return b instanceof e?b:new e(function(d){d(b)})}if(m)return m;g.prototype.i=function(b){if(null==this.g){this.g=[];var d=this;this.j(function(){d.o()})}this.g.push(b)};var r=E.setTimeout;g.prototype.j=function(b){r(b,0)};g.prototype.o=function(){for(;this.g&&this.g.length;){var b=this.g;this.g=[];for(var d=0;d<b.length;++d){var a=

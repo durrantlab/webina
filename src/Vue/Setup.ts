@@ -1,3 +1,8 @@
+// This file is part of Webina, released under the Apache 2.0 License. See
+// LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
+// details. Copyright 2019 Jacob D. Durrant.
+
+
 import * as NumericInput from "../UI/Forms/NumericInput";
 import * as CheckBox from "../UI/Forms/CheckBox";
 import * as FileInput from "../UI/Forms/FileInput";
