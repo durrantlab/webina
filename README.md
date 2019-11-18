@@ -164,23 +164,23 @@ The "Start Over" tab displays a simple button that allows the user to restart
 the Webina app. A warning message reminds the user that they will loose the
 results of the current Webina run unless they have saved their output files.
 
-## Running ProteinVR on Your Own Computer ##
+## Running Webina on Your Own Computer ##
 
 Most users will wish to simply access the already compiled, publicly available
-ProteinVR web app at [http://durrantlab.com/pvr/](http://durrantlab.com/pvr/).
-If you wish to instead run ProteinVR on your own UNIX-like computer (LINUX,
-macOS, etc.), follow these instructions:
+Webina web app at
+[http://durrantlab.com/webina](http://durrantlab.com/webina). If you wish to
+instead run Webina on your own UNIX-like computer (LINUX, macOS, etc.), follow
+these instructions:
 
-1. Download the `proteinvr_web_app.zip` file
-2. Uncompress the file: `unzip proteinvr_web_app.zip`
-3. Change to the new `proteinvr/` directory: `cd proteinvr`
+1. Download the `webina.zip` file
+2. Uncompress the file: `unzip webina.zip`
+3. Change to the new `webina/` directory: `cd webina`
 4. Start a local server. Python provides one out of the box: `python -m
    SimpleHTTPServer 8000`
 5. Access the server from your web-browser: `http://localhost:8000/` or
    perhaps `http://0.0.0.0:8000/`
 
-Running ProteinVR on other operating systems (e.g., Windows) should be
-similar.
+Running Webina on other operating systems (e.g., Windows) should be similar.
 
 ## Compiling the Webina Web App ##
 
