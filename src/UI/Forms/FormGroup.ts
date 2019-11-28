@@ -5,18 +5,40 @@
 
 declare var Vue;
 
+/**
+ * Setup the form-group Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('form-group', {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data": function() {
             return {}
         },
         "computed": {
+            /**
+             * Determines whether this component has a label.
+             * @returns boolean  True if it does, false otherwise.
+             */
             hasLabel(): boolean {
                 return this["label"] !== "" && this["label"] !== undefined;
             },
+
+            /**
+             * Determines if label should be placed to the left or above.
+             * @returns number  Returns 3 if it has a label, 0 otherwise.
+             */
             "labelCols"(): number {
                 return ((this.hasLabel === true)  && (this["labelToLeft"] === true)) ? 3 : 0;
             },
+
+            /**
+             * Determines if label should be placed to the left or above.
+             * @returns number  Returns 2 if it has a label, 0 otherwise.
+             */
             "labelColsLg"(): number {
                 return ((this.hasLabel === true)  && (this["labelToLeft"] === true)) ? 2 : 0;
             }

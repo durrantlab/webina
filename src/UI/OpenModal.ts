@@ -5,27 +5,55 @@
 
 declare var Vue;
 
+/**
+ * Setup the open-modal Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('open-modal', {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data": function() {
             return {}
         },
         "computed": {
             "modalShow": {
-                get() {
+                /**
+                 * Get the modalShow value..
+                 * @returns boolean
+                 */
+                get(): boolean {
                     return this.$store.state["modalShow"];
                 },
-                set(val) {
+
+                /**
+                 * Set the mmodalShow value.
+                 * @param  {boolean} val  The new value.
+                 * @returns void
+                 */
+                set(val: boolean): void {
                     this.$store.commit("setVar", {
                         name: "modalShow",
                         val
                     });
                 }
             },
-            "title"() {
+
+            /**
+             * Gets the modal title.
+             * @returns string  The title.
+             */
+            "title"(): string {
                 return this.$store.state["modalTitle"];
             },
-            "body"() {
+
+            /**
+             * Get's the modal body.
+             * @returns string  The body.
+             */
+            "body"(): string {
                 return this.$store.state["modalBody"];
             }
         },

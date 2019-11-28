@@ -6,6 +6,10 @@
 declare var Vue;
 declare var FileSaver;
 
+/**
+ * Setup the vina-output Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('vina-output', {
         "template": `
@@ -69,30 +73,56 @@ export function setup(): void {
         `,
         "props": {},
         "computed": {
+            /**
+             * Get's Vina's standard output.
+             * @returns string  The standard output.
+             */
             "stdOut"(): string {
                 return this.$store.state["stdOut"];
             },
+
+            /**
+             * Get's Vina's output file.
+             * @returns string  The output file.
+             */
             "outputContents"(): string {
                 return this.$store.state["outputContents"];
             },
+
+            /**
+             * Get the execution time.
+             * @returns string  The time.
+             */
             "time"(): string {
                 return this.$store.state["time"].toString();
             }
         },
+
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data"() {
             return {}
         },
         "methods": {
+            /**
+             * Runs when the user clicks the stdout download button.
+             * @returns void
+             */
             "stdOutDownload"(): void {
                 var blob = new Blob([this["stdOut"]], {type: "text/plain;charset=utf-8"});
                 FileSaver.saveAs(blob, "stdout.txt");
             },
 
+            /**
+             * Runs when the user clicks the download output button.
+             * @returns void
+             */
             "vinaOutputContentsDownload"(): void {
                 var blob = new Blob([this["outputContents"]], {type: "text/plain;charset=utf-8"});
                 FileSaver.saveAs(blob, "webina_out.pdbqt");
             }
-        },
-        "mounted"() { return; }
+        }
     })
 }

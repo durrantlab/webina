@@ -5,9 +5,17 @@
 
 declare var Vue;
 
+/**
+ * Setup the file-input Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('file-input', {
-        "data": function() {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
+        "data"(): any {
             return {
                 "file": false
             }
@@ -49,10 +57,20 @@ export function setup(): void {
         },
         "computed": {
             "val": {
-                get() {
+                /**
+                 * Get the file.
+                 * @returns any  A blob?
+                 */
+                get(): any {
                     return this["file"]
                 },
-                set(val) {
+
+                /**
+                 * Set the vinaParams object value.
+                 * @param  {any} val  The new value.
+                 * @returns void
+                 */
+                set(val: any): void {
                     if (val === null) {
                         // Reseting the value. Nothing to do here.
                         return;
@@ -116,11 +134,21 @@ export function setup(): void {
                     fr.readAsArrayBuffer(val);
                 }
             },
+
+            /**
+             * Determine whether the component value is valid.
+             * @returns boolean  True if it is valid, false otherwise.
+             */
             "isValid"(): boolean {
                 return (this["file"] !== false) && (this["file"] !== null);
             }
         },
-        "mounted"() {
+
+        /**
+         * Runs when the vue component is mounted.
+         * @returns void
+         */
+        "mounted"(): void {
             // Make default validation entry.
             if (this.$store.state["validation"][this["id"]] === undefined) {
                 this.$store.commit("setValidationParam", {

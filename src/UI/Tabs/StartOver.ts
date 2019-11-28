@@ -5,6 +5,10 @@
 
 declare var Vue;
 
+/**
+ * Setup the start-over Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('start-over', {
         "template": `
@@ -15,15 +19,23 @@ export function setup(): void {
         `,
         "props": {},
         "computed": {},
-        "data"() {
+
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
+        "data"(): any {
             return {}
         },
         "methods": {
+            /**
+             * Runs when the start-over button is clicked.
+             * @returns void
+             */
             "onSubmitClick"(): void {
                 jQuery("body").addClass("waiting");
                 location.reload();
             }
-        },
-        "mounted"() {}
+        }
     })
 }

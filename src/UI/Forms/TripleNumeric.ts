@@ -5,8 +5,16 @@
 
 declare var Vue;
 
+/**
+ * Setup the triple-numeric-input Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('triple-numeric-input', {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data": function() {
             return {}
         },

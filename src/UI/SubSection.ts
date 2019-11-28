@@ -5,9 +5,17 @@
 
 declare var Vue;
 
+/**
+ * Setup the sub-section Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('sub-section', {
-        "data": function() {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
+        "data"(): any {
             return {}
         },
         "computed": {},

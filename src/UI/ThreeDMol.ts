@@ -9,9 +9,17 @@ declare var Vue;
 
 let bigMolAlreadyModalDisplayed = false;
 
+/**
+ * Setup the threedmol Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('threedmol', {
-        "data": function() {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
+        "data"() {
             return {
                 "viewer": undefined,
                 "surfaceObj": undefined,
@@ -30,30 +38,74 @@ export function setup(): void {
             }
         },
         "computed": {
+            /**
+             * Get the value of the receptorContents variable.
+             * @returns string  The value.
+             */
             "receptorContents"(): string {
                 return this.$store.state["receptorContents"];
             },
+
+            /**
+             * Get the value of the ligandContents variable.
+             * @returns string  The value.
+             */
             "ligandContents"(): string {
                 return this.$store.state["ligandContents"];
             },
+
+            /**
+             * Get the value of the dockedContents variable.
+             * @returns string  The value.
+             */
             "dockedContents"(): string {
                 return this.$store.state["dockedContents"];
             },
+
+            /**
+             * Get the value of the crystalContents variable.
+             * @returns string  The value.
+             */
             "crystalContents"(): string {
                 return this.$store.state["crystalContents"];
             },
+
+            /**
+             * Get the value of the vinaParams variable.
+             * @returns string  The value.
+             */
             vinaParams(): string {
                 return this.$store.state["vinaParams"];
             },
+
+            /**
+             * Get the value of the surfBtnVariant variable.
+             * @returns string|boolean  The value.
+             */
             "surfBtnVariant"(): string|boolean {
                 return (this["renderProteinSurface"] === true) ? undefined : "default";
             },
+
+            /**
+             * Get the value of the allAtmBtnVariant variable.
+             * @returns string|boolean  The value.
+             */
             "allAtmBtnVariant"(): string|boolean {
                 return (this["renderProteinSticks"] === true) ? undefined : "default";
             },
+
+            /**
+             * Get the value of the crystalBtnVariant variable.
+             * @returns string|boolean  The value.
+             */
             "crystalBtnVariant"(): string|boolean {
                 return (this["renderCrystal"] === true) ? undefined : "default";
             },
+
+            /**
+             * Determines whether the appropriate PDB content has been loaded.
+             * @returns boolean  True if it has been loaded, false otherwise.
+             */
             "appropriatePdbLoaded"(): boolean {
                 switch (this["type"]) {
                     case "receptor":
@@ -64,12 +116,30 @@ export function setup(): void {
                         return this.appropriateDockedPdbLoaded;
                 }
             },
+
+            /**
+             * Determines whether the appropriate receptor PDB content has
+             * been loaded.
+             * @returns boolean  True if it has been loaded, false otherwise.
+             */
             appropriateReceptorPdbLoaded(): boolean {
                 return this.$store.state["receptorContents"] !== "" || this.$store.state["crystalContents"] !== "";
             },
+
+            /**
+             * Determines whether the appropriate ligand PDB content has been
+             * loaded.
+             * @returns boolean  True if it has been loaded, false otherwise.
+             */
             appropriateLigandPdbLoaded(): boolean {
                 return this.$store.state["ligandContents"] !== "";
             },
+
+            /**
+             * Determines whether the appropriate docked PDB content has been
+             * loaded.
+             * @returns boolean  True if it has been loaded, false otherwise.
+             */
             appropriateDockedPdbLoaded(): boolean {
                 return (this.$store.state["receptorContents"] !== "") && (this.$store.state["dockedContents"] !== "")
             }
@@ -109,7 +179,13 @@ export function setup(): void {
             </div>
         `,
         "watch": {
-            "receptorContents": function (oldReceptorContents: string, newReceptorContents: string) {
+            /**
+             * Watch when the receptorContents computed property.
+             * @param  {string} oldReceptorContents  The old value of the property.
+             * @param  {string} newReceptorContents  The new value of the property.
+             * @returns void
+             */
+            "receptorContents": function (oldReceptorContents: string, newReceptorContents: string): void {
                 // The purpose of this is to react when new receptorContents
                 // are added.
 
@@ -117,34 +193,56 @@ export function setup(): void {
                 this.modelAdded(duration);
                 // this.updateBox();  // So when invalid pdb loaded, can recover with valid pdb.
             },
-            "ligandContents": function (oldLigandContents: string, newLigandContents: string) {
+
+            /**
+             * Watch when the ligandContents computed property.
+             * @param  {string} oldLigandContents  The old value of the property.
+             * @param  {string} newLigandContents  The new value of the property.
+             * @returns void
+             */
+            "ligandContents": function (oldLigandContents: string, newLigandContents: string): void {
                 // The purpose of this is to react when new ligandContents are
                 // added.
 
                 let duration: number = (newLigandContents === "") ? 0 : 500;
                 this.modelAdded(duration);
             },
-            "dockedContents": function (oldDockedContents: string, newDockedContents: string) {
+
+            /**
+             * Watch when the dockedContents computed property.
+             * @param  {string} oldDockedContents  The old value of the property.
+             * @param  {string} newDockedContents  The new value of the property.
+             * @returns void
+             */
+            "dockedContents": function (oldDockedContents: string, newDockedContents: string): void {
                 // The purpose of this is to react when new dockedContents are
                 // added.
 
                 let duration: number = (newDockedContents === "") ? 0 : 500;
                 this.modelAdded(duration);
             },
-            "crystalContents": function (oldCrystalContents: string, newCrystalContents: string) {
+
+            /**
+             * Watch when the crystalContents computed property.
+             * @param  {string} oldCrystalContents  The old value of the property.
+             * @param  {string} newCrystalContents  The new value of the property.
+             * @returns void
+             */
+            "crystalContents": function (oldCrystalContents: string, newCrystalContents: string): void {
                 // The purpose of this is to react when new dockedContents are
                 // added.
 
                 let duration: number = (newCrystalContents === "") ? 0 : 500;
                 this.modelAdded(duration);
             },
-            // "renderProteinSurface": function(oldRenderProteinSurface: boolean, newRenderProteinSurface: boolean) {
-            //     this.showSurfaceAsAppropriate();
-            // },
-            // "renderProteinSticks": function(oldRenderProteinSticks: boolean, newRenderProteinSticks: boolean) {
-            //     this.showSticksAsAppropriate();
-            // },
-            vinaParams(newVinaParams: string, oldVinaParams: string) {
+
+            /**
+             * Watch when the vinaParams computed property.
+             * @param  {string} oldVinaParams  The old value of the property.
+             * @param  {string} newVinaParams  The new value of the property.
+             * @returns void
+             */
+            vinaParams(oldVinaParams: string, newVinaParams: string): void {
                 // For updating the docking box...
                 if (this["type"] !== "receptor") {
                     return;
@@ -166,7 +264,12 @@ export function setup(): void {
             }
         },
         "methods": {
-
+            /**
+             * Runs when a new model has been added.
+             * @param  {number} duration  How long to wait before adding that
+             *                            model to 3dmol.js widget.
+             * @returns void
+             */
             modelAdded(duration: number): void {
                 // First, check to make sure the added model is relevant to
                 // this 3dmoljs instance.
@@ -269,6 +372,12 @@ export function setup(): void {
                 }, 50);
 
             },
+
+            /**
+             * Runs when a receptor has been added.
+             * @param  {any} mol  The 3dmol.js molecule object.
+             * @returns void
+             */
             receptorAdded(mol: any): void {
                 // Get the center of the protein
                 var atoms = mol.selectedAtoms({});
@@ -331,6 +440,12 @@ export function setup(): void {
                 this.showSurfaceAsAppropriate();
                 this.showSticksAsAppropriate();
             },
+
+            /**
+             * Runs when a ligand has been added.
+             * @param  {any} mol  The 3dmol.js molecule object.
+             * @returns void
+             */
             ligandAdded(mol, isCrystal = false): void {
                 let stickStyle = {};
                 mol.setStyle({}, {
@@ -343,6 +458,12 @@ export function setup(): void {
                     this.showCrystalAsAppropriate();
                 }
             },
+
+            /**
+             * Makes the atoms of a 3dmol.js molecule clicable.
+             * @param  {any} mol  The 3dmol.js molecule.
+             * @returns void
+             */
             makeAtomsClickable(mol: any): void {
                 mol.setClickable({}, true, (e) => {
                     this.$store.commit("setVinaParam", {
@@ -376,7 +497,15 @@ export function setup(): void {
                     })
                 }
             },
-            setVinaParamIfUndefined(name: string, val: any) {
+
+            /**
+             * Sets a vina parameter only if it is currently undefined. Used
+             * for setting default values, I think.
+             * @param  {string} name  The variable name.
+             * @param  {any}    val   The value.
+             * @returns void
+             */
+            setVinaParamIfUndefined(name: string, val: any): void {
                 if (this.$store.state["vinaParams"][name] === undefined) {
                     this.$store.commit("setVinaParam", {
                         name,
@@ -388,6 +517,12 @@ export function setup(): void {
                     })
                 }
             },
+
+            /**
+             * Show a molecular surface representation if it is appropriate
+             * given user settings.
+             * @returns void
+             */
             showSurfaceAsAppropriate(): void {
                 // If no protein has been loaded, no need to proceed.
                 if (this["receptorMol"] === undefined) {
@@ -430,6 +565,12 @@ export function setup(): void {
                     }
                 }
             },
+
+            /**
+             * Show a sticks representation if it is appropriate given user
+             * settings.
+             * @returns void
+             */
             showSticksAsAppropriate(): void {
                 // If no protein has been loaded, no need to proceed.
                 if (this["receptorMol"] === undefined) {
@@ -457,6 +598,12 @@ export function setup(): void {
                     this["viewer"]["render"]();
                 }
             },
+
+            /**
+             * Show a yellow sticks representation if it is appropriate given
+             * user settings.
+             * @returns void
+             */
             showCrystalAsAppropriate(): void {
                 // If no protein has been loaded, no need to proceed.
                 if (this["crystalMol"] === undefined) {
@@ -482,18 +629,38 @@ export function setup(): void {
                     this["viewer"]["render"]();
                 }
             },
+
+            /**
+             * Toggles the surface representation on and off.
+             * @returns void
+             */
             "toggleSurface"(): void {
                 this["renderProteinSurface"] = !this["renderProteinSurface"];
                 this.showSurfaceAsAppropriate();
             },
+
+            /**
+             * Toggles the sricks representation on and off.
+             * @returns void
+             */
             "toggleSticks"(): void {
                 this["renderProteinSticks"] = !this["renderProteinSticks"];
                 this.showSticksAsAppropriate();
             },
+
+            /**
+             * Toggles the yellow sticks representation on and off.
+             * @returns void
+             */
             "toggleCrystal"(): void {
                 this["renderCrystal"] = !this["renderCrystal"];
                 this.showCrystalAsAppropriate();
             },
+
+            /**
+             * Updates the box in the 3dmol.js widget.
+             * @returns void
+             */
             updateBox(): void {
                 if (this["viewer"] === undefined) {
                     // Try again in a bit. Not loaded yet...
@@ -534,12 +701,23 @@ export function setup(): void {
                 this["viewer"].render();
             }
        },
+
+        /**
+         * Runs when the vue component is mounted.
+         * @returns void
+         */
         "mounted"() {
             this["renderProteinSurface"] = this["proteinSurface"];
         }
     })
 }
 
+/**
+ * Converts a pdbqt string to pdb.
+ * @param  {string}           pdbqtTxt  The pdbqt text.
+ * @param  {any=undefined}    store?    A VueX store object.
+ * @returns string  The pdb text.s
+ */
 export function pdbqtToPDB(pdbqtTxt: string, store?: any): string {
     let lines: string[] = pdbqtTxt.split("\n");
 

@@ -2,5 +2,4 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2019 Jacob D. Durrant.
 
-
 export let VERSION = "1.0.0";

@@ -5,6 +5,13 @@
 
 // For functions that don't really need to be within the Vue framework.
 
+/**
+ * Creates a new object with a property updated.
+ * @param  {any}    obj  The original object.
+ * @param  {string} key  The new key.
+ * @param  {any}    val  The new value.
+ * @returns any  A new object with the key/value updated.
+ */
 export function getNewObjWithUpdate(obj: any, key: string, val: any): any {
     let newObj = {};
     const keys = Object.keys(obj);
@@ -21,6 +28,10 @@ export function getNewObjWithUpdate(obj: any, key: string, val: any): any {
     return newObj;
 }
 
+/**
+ * Detect whether webassembly is supported.
+ * @returns boolean  True if supported. False otherwise
+ */
 export function webAssemblySupported(): boolean {
     // https://stackoverflow.com/questions/47879864/how-can-i-check-if-a-browser-supports-webassembly
     try {
@@ -35,11 +46,20 @@ export function webAssemblySupported(): boolean {
     return false;
 };
 
+/**
+ * Detect whether running in firefox.
+ * @returns boolean  True if firefox. False otherwise.
+ */
 export function isFirefox(): boolean {
     // See https://stackoverflow.com/questions/7000190/detect-all-firefox-versions-in-js
     return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 }
 
+/**
+ * Get the path of the index.html file. Allows webina to run even fromm a
+ * subdir.
+ * @returns string  The path.
+ */
 export function curPath(): string {
     let url = window.location.pathname.replace("index.html", "");
     if (url.slice(url.length - 1) !== "/") {

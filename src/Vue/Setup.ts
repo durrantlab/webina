@@ -25,6 +25,10 @@ declare var Vuex;
 declare var BootstrapVue;
 declare var jQuery;
 
+/**
+ * Load and setup all Vue components.
+ * @returns void
+ */
 export function setup(): void {
     Vue.use(BootstrapVue)
     Vue.use(Vuex)

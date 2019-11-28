@@ -5,24 +5,47 @@
 
 declare var Vue;
 
+/**
+ * Setup the check-box Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('check-box', {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data": function() {
             return {}
         },
         "computed": {
             "val": {
-                get() {
+                /**
+                 * Get the value from the vinaParams object.
+                 * @returns any
+                 */
+                get(): any {
                     return this.$store.state["vinaParams"][this["id"]];
                 },
-                set(val) {
+
+                /**
+                 * Set the vinaParams object value.
+                 * @param  {any} val  The new value.
+                 * @returns void
+                 */
+                set(val: any): void {
                     this.$store.commit("setVinaParam", {
                         name: this["id"],
                         val: val
                     });
                 }
             },
-            "desc"() {
+
+            /**
+             * Generates a description string.
+             * @returns string  The description.
+             */
+            "desc"(): string {
                 return this["description"] + (this["required"] !== true ? " (Leave blank to use default value.)" : "");
             }
         },

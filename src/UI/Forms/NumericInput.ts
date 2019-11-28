@@ -5,8 +5,16 @@
 
 declare var Vue;
 
+/**
+ * Setup the numeric-input Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('numeric-input', {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data": function() {
             return {
                 "invalidMsg": "This field is required."
@@ -14,10 +22,20 @@ export function setup(): void {
         },
         "computed": {
             "val": {
-                get() {
+                /**
+                 * Get the value from the vinaParams object.
+                 * @returns any
+                 */
+                get(): any {
                     return this.$store.state["vinaParams"][this["id"]];
                 },
-                set(val) {
+
+                /**
+                 * Set the vinaParams object value.
+                 * @param  {any} val  The new value.
+                 * @returns void
+                 */
+                set(val: any): void {
                     // Save the value to the store
                     val = (val === "") ? undefined : +val;
                     if (isNaN(val)) {
@@ -54,6 +72,11 @@ export function setup(): void {
                     });
                 }
             },
+
+            /**
+             * Generates a description string.
+             * @returns string  The description.
+             */
             "desc"(): string {
                 let toAdd = "";
                 if ((this["required"] !== true) && (this["default"] === undefined)) {
@@ -61,6 +84,11 @@ export function setup(): void {
                 }
                 return this["description"] + toAdd;
             },
+
+            /**
+             * Determine whether the component value is valid.
+             * @returns boolean  True if it is valid, false otherwise.
+             */
             "isValid"(): boolean {
                 let val = this.$store.state["validation"][this["id"]];
                 return val;
@@ -108,7 +136,12 @@ export function setup(): void {
                 "default": undefined
             }
         },
-        "mounted"() {
+
+        /**
+         * Runs when the vue component is mounted.
+         * @returns void
+         */
+        "mounted"(): void {
             // Always start by assuming it validates fine.
             if (this.$store.state["validation"][this["id"]] === undefined) {
                 this.$store.commit("setValidationParam", {

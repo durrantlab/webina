@@ -8,6 +8,10 @@ import * as Utils from "../Utils";
 
 declare var Vue;
 
+/**
+ * Setup the main Vue app.
+ * @returns void
+ */
 export function setup(): void {
     new Vue({
         "el": '#app',
@@ -57,6 +61,11 @@ export function setup(): void {
                 </b-card>
             </div>
         `,
+
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data"() {
             return {
                 "receptorFile": false,
@@ -65,51 +74,76 @@ export function setup(): void {
         },
         "computed": {
             "tabIdx": {
-                get() {
+                /**
+                 * Get the tabIdx.
+                 * @returns number
+                 */
+                get(): number {
                     return this.$store.state["tabIdx"];
                 },
-                set(val: number) {
+
+                /**
+                 * Set the tabIdx value.
+                 * @param  {number} val  The new value.
+                 * @returns void
+                 */
+                set(val: number): void {
                     this.$store.commit("setVar", {
                         name: "tabIdx",
                         val: val
                     });
                 }
             },
+
+            /**
+             * Determine whether the parameters tab is disabled.
+             * @returns boolean  True if it is disabled, false otherwise.
+             */
             "parametersTabDisabled"(): boolean {
                 return this.$store.state["parametersTabDisabled"];
             },
+
+            /**
+             * Determine whether the running tab is disabled.
+             * @returns boolean  True if it is disabled, false otherwise.
+             */
             "runningTabDisabled"(): boolean {
                 return this.$store.state["runningTabDisabled"];
             },
+
+            /**
+             * Determine whether the output tab is disabled.
+             * @returns boolean  True if it is disabled, false otherwise.
+             */
             "outputTabDisabled"(): boolean {
                 return this.$store.state["outputTabDisabled"];
             },
+
+            /**
+             * Determine whether the existing vina output tab is disabled.
+             * @returns boolean  True if it is disabled, false otherwise.
+             */
             "existingVinaOutputTabDisabled"(): boolean {
                 return this.$store.state["existingVinaOutputTabDisabled"];
             },
+
+            /**
+             * Determine whether the start over tab is disabled.
+             * @returns boolean  True if it is disabled, false otherwise.
+             */
             "startOverTabDisabled"(): boolean {
                 return this.$store.state["startOverTabDisabled"];
             }
         },
 
         "methods": {},
+
+        /**
+         * Runs when the vue component is mounted.
+         * @returns void
+         */
         "mounted"() {
-            // Also add image to the jumbotron. Doing it here instead of in css
-            // because otherwise doesn't work when you put webina in a subdirectory.
-            // let t = jQuery(".jumbo");
-            // t.css("color", "red");
-            // console.log(t.css("color"))
-            // // debugger;
-            // jQuery(".jumbo").css("background-image", "webina_logo.jpg");
-
-
-            window["$store"] = this.$store;  // For debugging
+            // window["$store"] = this.$store;  // For debugging
         }
     })
 }
-
-// <b-tab title="Convert to PDBQT"> <!--  :disabled="tabIdxForDisable < 1"> -->
-// <b-card-text>
-//     <p>Open Babel convert to PDBQT if necessary here? Or maybe a modal...?</p>
-// </b-card-text>
-// </b-tab>

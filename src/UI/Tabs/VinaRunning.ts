@@ -5,6 +5,10 @@
 
 declare var Vue;
 
+/**
+ * Setup the vina-running Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('vina-running', {
         "template": `
@@ -19,30 +23,17 @@ export function setup(): void {
         `,
         "props": {},
         "computed": {},
+
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data"() {
             return {
                 "msg": "",
-                msgIdx: 0,
-                // msgs: [
-                //     "Running Webina...",
-                //     "Positioning small molecule...",
-                //     "Calculating predicted binding affinity...",
-                //     "Generating ligand poses...",
-                //     "Docking molecule..."
-                // ]
+                msgIdx: 0
             }
         },
-        "methods": {
-            // setMsg() {
-            //     this.msgIdx = (this.msgIdx + 1) % (this.msgs.length);
-            //     this["msg"] = this.msgs[this.msgIdx];
-            // }
-        },
-        "mounted"() {
-            // this.setMsg();
-            // setInterval(() => {
-            //     this.setMsg();
-            // }, 3000);
-        }
+        "methods": {}
     })
 }

@@ -69,11 +69,27 @@ export const store = new Vuex.Store({
         "time": 0  // Used to keep track of execution time.
     },
     "mutations": {
-        "setVar"(state: any, payload: IVueXStoreSetVar) {
+        /**
+         * Set one of the VueX store variables.
+         * @param  {any}              state    The VueX state.
+         * @param  {IVueXStoreSetVar} payload  An object containing
+         *                                     information about which
+         *                                     variable to set.
+         * @returns void
+         */
+        "setVar"(state: any, payload: IVueXStoreSetVar): void {
             state[payload.name] = payload.val;
 
         },
-        "setVinaParam"(state: any, payload: iVueXParam) {
+
+        /**
+         * Set one of the vina parameters.
+         * @param  {any}        state    The VueX state.
+         * @param  {iVueXParam} payload  An object with information about
+         *                               which vina parameter to set.
+         * @returns void
+         */
+        "setVinaParam"(state: any, payload: iVueXParam): void {
             // By redefining the whole variable, it becomes reactive. Directly
             // changing individual properties is not reactive.
             state["vinaParams"] = Utils.getNewObjWithUpdate(
@@ -84,7 +100,14 @@ export const store = new Vuex.Store({
             state.hideDockingBoxParams = state["vinaParams"]["score_only"] === true
         },
 
-        "setValidationParam"(state: any, payload: iVueXParam) {
+        /**
+         * Set a validation parameter (either validates or doesn't).
+         * @param  {any}        state    The VueX state.
+         * @param  {iVueXParam} payload  An object containing information
+         *                               about what to set.
+         * @returns void
+         */
+        "setValidationParam"(state: any, payload: iVueXParam): void {
             // By redefining the whole variable, it becomes reactive. Directly
             // changing individual properties is not reactive.
             state["validation"] = Utils.getNewObjWithUpdate(
@@ -94,7 +117,14 @@ export const store = new Vuex.Store({
             );
         },
 
-        "disableTabs"(state: any, payload: any) {
+        /**
+         * Disable or enable tabs.
+         * @param  {any} state    The VueX stste.
+         * @param  {any} payload  An object containing information about which
+         *                        tabs should be enabled or disabled.
+         * @returns void
+         */
+        "disableTabs"(state: any, payload: any): void {
             const tabDisableVarNames = Object.keys(payload);
             const tabDisableVarNamesLen = tabDisableVarNames.length;
             for (let i = 0; i < tabDisableVarNamesLen; i++) {
@@ -116,7 +146,14 @@ export const store = new Vuex.Store({
                 });
             }
         },
-        "outputToData"(state: any) {
+
+        /**
+         * Extract and save relevant data about the poses from the Vina
+         * output.
+         * @param  {any} state  The VueX state.
+         * @returns void
+         */
+        "outputToData"(state: any): void {
             let data = [];
 
             let outPdbqtFileTxt = state["outputContents"];
@@ -143,12 +180,18 @@ export const store = new Vuex.Store({
             // Set the first docked frame as the selected one.
             state["dockedContents"] = framePDBs[0][1];
         },
+
+        /**
+         * Open the modal.
+         * @param  {any}    state    The VueX state.
+         * @param  {IModal} payload  An object with the title and body.
+         * @returns void
+         */
         "openModal"(state: any, payload: IModal): void {
             state["modalTitle"] = payload.title;
             state["modalBody"] = payload.body;
             state["modalShow"] = true;
             jQuery("body").removeClass("waiting");
         }
-    },
-    "getters": {}
+    }
 });

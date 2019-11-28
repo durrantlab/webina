@@ -5,6 +5,10 @@
 
 declare var Vue;
 
+/**
+ * Setup the vina-existing-output Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('vina-existing-output', {
         "template": `
@@ -49,10 +53,20 @@ export function setup(): void {
         `,
         "props": {},
         "computed": {},
-        "data"() {
+
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
+        "data"(): any {
             return {}
         },
         "methods": {
+            /**
+             * Runs when the user indicates he or she wants to use example
+             * output files rather than provide their own.
+             * @returns void
+             */
             "useExampleOutputFiles"(): void {
                 // These values should now validate.
                 let validateVars = ["receptor", "output"];
@@ -85,7 +99,16 @@ export function setup(): void {
 
                 this["onSubmitClick"](null, promise);
             },
-            "onSubmitClick"(e, promise=undefined): void {
+
+            /**
+             * Runs when the user clicks the submit button.
+             * @param  {any}                    e        Not sure what this
+             *                                           is.
+             * @param  {Promise<any>=undefined} promise  A promise to continue
+             *                                           from.
+             * @returns void
+             */
+            "onSubmitClick"(e: any, promise: Promise<any>=undefined): void {
                 if (this["validate"]() === true) {
                     // Disable some tabs
                     this.$store.commit("disableTabs", {
@@ -113,6 +136,12 @@ export function setup(): void {
                     });
                 }
             },
+
+            /**
+             * Determines whether valid parameters have been provided.
+             * Otherwise, cannot display the mock Vina output.
+             * @returns boolean  True if everything is valid, false otherwise.
+             */
             "validate"(): boolean {
                 let validations = this.$store.state["validation"];
 
@@ -135,7 +164,6 @@ export function setup(): void {
 
                 return validate;
             },
-        },
-        "mounted"() { return; }
+        }
     })
 }

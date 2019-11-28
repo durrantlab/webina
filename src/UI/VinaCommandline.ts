@@ -2,18 +2,34 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2019 Jacob D. Durrant.
 
-
 declare var Vue;
 
+/**
+ * Setup the vina-commandline Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('vina-commandline', {
-        "data": function() {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
+        "data"() {
             return {}
         },
         "computed": {
+            /**
+             * Determines whether the provided vina parameters validate.
+             * @returns boolean  True if the validate, false otherwise.
+             */
             "vinaParamsValidate"(): boolean {
                 return this.$store.state["vinaParamsValidates"];
             },
+
+            /**
+             * Generates a mock vina command line.
+             * @returns string  The mock command line.
+             */
             "commandlineStr"(): string {
                 if (this.vinaParamsValidate === false) {
                     return "First fix parameter problems above..."

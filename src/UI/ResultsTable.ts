@@ -5,12 +5,24 @@
 
 declare var Vue;
 
+/**
+ * Setup the results-table Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('results-table', {
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data": function() {
             return {}
         },
         "computed": {
+            /**
+             * Gets the items in the results table.
+             * @returns any[]  The array of items.
+             */
             "items"(): any[] {
                 // let data = [[[1,48.4,0,0],"HETATM    1  C"],[[1,48.4,0,0],"HETATM    1  C"],[[1,48.4,0,0],"HETATM    1  C"]];  //this.$store.state["pdbOutputFrames"];
                 let data = this.$store.state["pdbOutputFrames"];
@@ -45,6 +57,11 @@ export function setup(): void {
                 }
                 return items;
             },
+
+            /**
+             * Get's the field descriptions of each item in the results list.
+             * @returns any[]  A list of the field descriptions.
+             */
             "fields"(): any[] {
                 return [
                     {
@@ -72,7 +89,13 @@ export function setup(): void {
         `,
         "props": {},
         "methods": {
-            "rowClicked"(data, idx) {
+            /**
+             * Runs when the table row is clicked. Updates visualization.
+             * @param  {any}    data  Not used.
+             * @param  {number} idx   The index of the clicked row.
+             * @returns void
+             */
+            "rowClicked"(data: any, idx: number): void {
                 let ligPDBTxt = this.$store.state["pdbOutputFrames"][idx][1];
                 this.$store.commit("setVar", {
                     name: "dockedContents",

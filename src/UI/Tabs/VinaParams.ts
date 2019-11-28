@@ -8,6 +8,10 @@ import * as Utils from "../../Utils";
 declare var Vue;
 declare var Webina;
 
+/**
+ * Setup the vina-params Vue commponent.
+ * @returns void
+ */
 export function setup(): void {
     Vue.component('vina-params', {
         "template": `
@@ -236,10 +240,21 @@ export function setup(): void {
         `,
         "props": {},
         "computed": {
+            /**
+             *
+             * Whether to hide the vina docking-box parameters.
+             * @returns boolean  True if they should be hidden, false
+             *                   otherwise.
+             */
             "hideDockingBoxParams"(): boolean {
                 return this.$store.state.hideDockingBoxParams;
             }
         },
+
+        /**
+         * Get the data associated with this component.
+         * @returns any  The data.
+         */
         "data"() {
             return {
                 "showFileInputs": true,
@@ -247,6 +262,11 @@ export function setup(): void {
             }
         },
         "methods": {
+            /**
+             * Runs when user indicates theye want to use example vina input
+             * files, rather than provide their own.
+             * @returns void
+             */
             "useExampleVinaInputFiles"(): void {
                 this["showFileInputs"] = false;
 
@@ -305,6 +325,11 @@ export function setup(): void {
                     }
                 }, 100);
             },
+
+            /**
+             * Runs when the user presses the submit button.
+             * @returns void
+             */
             "onSubmitClick"(): void {
                 if (this["validate"]() === true) {
                     this.$store.commit("disableTabs", {
@@ -366,7 +391,14 @@ export function setup(): void {
                     });
                 }
             },
-            "validate"(modalWarning=true): boolean {
+
+            /**
+             * Determines whether all form values are valid.
+             * @param  {boolean=true} modalWarning  Whether to show a modal if
+             *                                      they are not valid.
+             * @returns boolean  True if they are valid, false otherwise.
+             */
+            "validate"(modalWarning: boolean=true): boolean {
                 let validations = this.$store.state["validation"];
 
                 let pass = true;
@@ -405,7 +437,15 @@ export function setup(): void {
 
                 return pass;
             },
-            afterWASM(outPdbqtFileTxt: string, stdOut: string, stdErr: string) {
+
+            /**
+             * Runs after the Vina WASM file is complete.
+             * @param  {string} outPdbqtFileTxt  The contents of the Vina output pdbqt file.
+             * @param  {string} stdOut           The contents of the Vina standard output.
+             * @param  {string} stdErr           The contents of the Vina standard error.
+             * @returns void
+             */
+            afterWASM(outPdbqtFileTxt: string, stdOut: string, stdErr: string): void {
                 // Disable some tabs
                 this.$store.commit("disableTabs", {
                     "parametersTabDisabled": true,
@@ -440,6 +480,12 @@ export function setup(): void {
 
                 jQuery("body").removeClass("waiting");
             },
+
+            /**
+             * Shows a Webina error.
+             * @param  {string} message  The error message.
+             * @returns void
+             */
             showWebinaError(message: string): void {
                 this.$store.commit("openModal", {
                     title: "Webina Error!",
@@ -447,6 +493,11 @@ export function setup(): void {
                 });
             }
         },
+
+        /**
+         * Runs when the vue component is mounted.
+         * @returns void
+         */
         "mounted"() {
             this["webAssemblyAvaialble"] = Utils.webAssemblySupported();
         }
