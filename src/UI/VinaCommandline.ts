@@ -20,18 +20,33 @@ export function setup(): void {
                 } else {
                     let params = this.$store.state["vinaParams"];
 
-                    let cmdStr = "";
-
                     const paramNames = Object.keys(params);
                     const paramNamesLen = paramNames.length;
+                    const keyValPairs = [];
                     for (let i = 0; i < paramNamesLen; i++) {
                         const paramName = paramNames[i];
                         const val = params[paramName];
                         if ((val !== false) && (val !== null) && (val !== undefined)) {
-                            cmdStr = cmdStr + " --" + paramName;
+                            let keyValPair = [paramName];
                             if (typeof(val) !== "boolean") {
-                                cmdStr = cmdStr + " " + val.toString();
+                                keyValPair.push(val.toString())
+                            } else {
+                                keyValPair.push("")
                             }
+                            keyValPairs.push(keyValPair);
+                        }
+                    }
+                    keyValPairs.sort();
+
+                    let cmdStr = "";
+                    const keyValPairsLen = keyValPairs.length;
+                    for (let i = 0; i < keyValPairsLen; i++) {
+                        const keyValPair = keyValPairs[i];
+                        const paramName = keyValPair[0];
+                        const val = keyValPair[1];
+                        cmdStr = cmdStr + " --" + paramName;
+                        if (val !== "") {
+                            cmdStr = cmdStr + " " + val.toString();
                         }
                     }
 
