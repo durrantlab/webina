@@ -106,7 +106,7 @@ export function setup(): void {
                             label="Exhaustiveness" id="exhaustiveness"
                             description="Exhaustiveness of the global search (roughly proportional to time). Webina defaults to 4 to speed execution in the browser, but the Vina default is 8. Use 8 when accuracy is critical."
                             placeholder="8"
-                            :default="4"
+                            :default="8"
                             :min="1"
                         ></numeric-input>
                     </sub-section>

@@ -7,7 +7,9 @@
 // access from here.
 
 let VERSION = "XXXXXXXXXXXXX.X"  // Replaced by compile script.
-console.log("Webina JavaScript Library " + VERSION);
+console.log("Webina Library " + VERSION);
+console.log("    Compiled from Vina 1.1.2 codebase:");
+console.log("    http://vina.scripps.edu/")
 
 var WEBINA_Module: any
 
