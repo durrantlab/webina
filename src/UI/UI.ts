@@ -5,6 +5,7 @@
 
 import * as Store from "../Vue/Store";
 import * as Utils from "../Utils";
+import { VERSION } from "../Version";
 
 declare var Vue;
 
@@ -20,13 +21,13 @@ export function setup(): void {
             <div class="container-fluid">
                 <open-modal></open-modal>
                 <div id="no-mobile">
-                    <b-jumbotron class="jumbo" header="Webina" lead="AutoDock Vina Ported to WebAssembly">
-                        <p>Webina is not designed to work on mobile phones. Please use a device with a larger screen.</p>
+                    <b-jumbotron class="jumbo" header="Webina ${VERSION}" lead="AutoDock Vina Ported to WebAssembly">
+                        <p>Webina ${VERSION} is not designed to work on mobile phones. Please use a device with a larger screen.</p>
                     </b-jumbotron>
                 </div>
 
-                <b-jumbotron class="jumbo" style="background-image:url(${Utils.curPath()}webina_logo.jpg);" header="Webina" lead="AutoDock Vina Ported to WebAssembly">
-                    <p>Brought to you by the Durrant Lab.</p>
+                <b-jumbotron class="jumbo" style="background-image:url(${Utils.curPath()}webina_logo.jpg);" header="Webina ${VERSION}" lead="AutoDock Vina Ported to WebAssembly">
+                    <p>Brought to you by the <a target="_blank" href="http://durrantlab.com">Durrant Lab</a>.</p>
                     <b-button variant="primary" target="_blank" href="http://durrantlab.com">More Info</b-button>
                 </b-jumbotron>
 
