@@ -1,6 +1,6 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 
 
 import * as Utils from "../../Utils";
@@ -23,25 +23,26 @@ export function setup(): void {
                     >
                         <b-card-text>
                             Use this tab to setup a Webina job in your browser.
-                            Specify the input PDBQT files and Vina parameters
-                            below.
+                            Specify the input files and Vina parameters below.
                         </b-card-text>
                     </b-card>
 
-                    <sub-section title="Input PDBQT Files" v-if="showFileInputs">
+                    <sub-section title="Input (PDBQT) Files" v-if="showFileInputs">
                         <file-input
                             label="Receptor"
                             id="receptor"
-                            description="The rigid part of the receptor (PDBQT). Convert PDB files to PDBQT using <a target='_blank' href='http://mgltools.scripps.edu/'>MGLTools</a> or <a target='_blank' href='http://openbabel.org/wiki/Main_Page'>Open Babel</a>. Be sure to add polar hydrogen atoms."
-                            accept=".pdbqt"
+                            description="Formats: PDBQT (best), PDB, ENT, XYZ, PQR, MCIF, MMCIF. Be sure to add polar hydrogen atoms."
+                            accept=".pdbqt" convert=".pdb, .ent, .xyz, .pqr, .mcif, .mmcif"
                         ></file-input>
 
                         <file-input
                             label="Ligand"
                             id="ligand"
-                            description="The ligand file (PDBQT). Convert PDB files to PDBQT using <a target='_blank' href='http://mgltools.scripps.edu/'>MGLTools</a> or <a target='_blank' href='http://openbabel.org/wiki/Main_Page'>Open Babel</a>. Add hydrogen atoms to your ligand using <a target='_blank' href='https://git.durrantlab.pitt.edu/jdurrant/gypsum_dl'>Gypsum-DL</a>."
-                            accept=".pdbqt"
-                        ></file-input>
+                            description="Formats: PDBQT (best), CAN, MDL, MOL, MOL2, PDB, SD, SDF, SMI, SMILES, XYZ. Add hydrogens with <a target='_blank' href='https://git.durrantlab.pitt.edu/jdurrant/gypsum_dl'>Gypsum-DL</a>."
+                            accept=".pdbqt" convert=".can, .mdl, .mol, .mol2, .pdb, .sd, .sdf, .smi, .smiles, .xyz"
+                        >
+                            <template v-slot:extraDescription>Or <a href='' @click="onDrawLigClick($event);">draw your ligand</a>.</template>
+                        </file-input>
 
                         <file-input
                             label="Correct Pose"
@@ -390,6 +391,17 @@ export function setup(): void {
                         });
                     });
                 }
+            },
+
+            /**
+             * Opens the draw ligand modal.
+             * @param  {*} e  A click event so you can stop the propagation.
+             * @returns void
+             */
+            "onDrawLigClick"(e: any): void {
+                this.$store.commit("drawSmilesModal");
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             /**

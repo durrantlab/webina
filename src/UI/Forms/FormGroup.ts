@@ -1,6 +1,6 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 
 
 declare var Vue;
@@ -57,8 +57,11 @@ export function setup(): void {
                     <small
                         tabindex="-1"
                         :id="'input-group-input-group-' + id + '__BV_description_'"
-                        class="form-text text-muted"
+                        class="form-text text-muted" style="display:inline;"
                         v-html="description">
+                    </small>
+                    <small class="form-text text-muted" style="display:inline;">
+                        <slot name="extraDescription"></slot>
                     </small>
                 </b-form-group>
                 <div v-else>

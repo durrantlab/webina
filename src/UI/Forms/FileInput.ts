@@ -1,6 +1,6 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 
 
 declare var Vue;
@@ -20,19 +20,41 @@ export function setup(): void {
                 "file": false
             }
         },
-        "methods": {},
+        "methods": {
+            /**
+             * Given a file object, returns a promise that resolves the text
+             * in that file.
+             * @param  {*} fileObj  The file object.
+             * @returns Promise
+             */
+            getFileContents(fileObj): Promise<any> {
+                return new Promise((resolve, reject) => {
+                    var fr = new FileReader();
+                    fr.onload = () => {
+                        // @ts-ignore: Not sure why this causes Typescript problems.
+                        var data = new Uint8Array(fr.result);
+                        resolve(new TextDecoder("utf-8").decode(data));
+                    };
+                    fr.readAsArrayBuffer(fileObj);
+                });
+            }
+        },
         "template": `
             <form-group
                 :label="label"
                 :id="'input-group-' + id"
                 :description="description"
+                styl="line-height:0;"
             >
+                <template v-slot:extraDescription>
+                    <slot name="extraDescription"></slot>
+                </template>
                 <b-form-file
                     v-model="val"
                     :state="Boolean(file)"
                     placeholder="Choose a file or drop it here..."
                     drop-placeholder="Drop file here..."
-                    :class="id" :accept="accept"
+                    :class="id" :accept="allAcceptableFiles"
                     :required="required"
                 ></b-form-file>
                 <small v-if="(!isValid) && (required === true)" alert tabindex="-1" class="text-danger form-text">{{invalidMsg}}</small>
@@ -53,6 +75,10 @@ export function setup(): void {
             "accept": {
                 "type": String,
                 "default": ".pdbqt, .out, .pdb"
+            },
+            "convert": {
+                "type": String,
+                "default": ""
             }
         },
         "computed": {
@@ -83,8 +109,21 @@ export function setup(): void {
                                             .split(/,/g)
                                             .map(e => e.replace(/ /g, "")
                                             .replace(/\./, ""));
+                    let convertExt = this["convert"].toLowerCase()
+                                        .split(/,/g)
+                                        .map(e => e.replace(/ /g, "")
+                                        .replace(/\./, ""));
 
-                    if (acceptableExt.indexOf(ext) === -1) {
+                    if (convertExt.indexOf(ext) !== -1) {
+                        this.getFileContents(val).then((text: string) => {
+                            this.$store.commit("openConvertFileModal", {
+                                ext: ext,
+                                type: this["id"],
+                                file: text
+                            });
+                        });
+                        return;
+                    } else if (acceptableExt.indexOf(ext) === -1) {
                         // It is not one of the acceptable extensions. Need to
                         // cancel.
                         let msg = "The file must end in ";
@@ -122,17 +161,17 @@ export function setup(): void {
                         val: val.name
                     });
 
-                    var fr = new FileReader();
-                    fr.onload = () => {
-                        // @ts-ignore: Not sure why this causes Typescript problems.
-                        var data = new Uint8Array(fr.result);
+                    this.getFileContents(this["file"]).then((text: string) => {
                         this.$store.commit("setVar", {
                             name: this["id"] + "Contents",
-                            val: new TextDecoder("utf-8").decode(data)
-                        })
-                    };
-                    fr.readAsArrayBuffer(val);
+                            val: text
+                        });
+                    });
                 }
+            },
+
+            "allAcceptableFiles"(): string {
+                return this["accept"] + (this["convert"] === "" ? "" : ", " + this["convert"]);
             },
 
             /**

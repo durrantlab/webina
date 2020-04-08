@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const {
     CleanWebpackPlugin
 } = require('clean-webpack-plugin');
+// const ReplaceHashInFileWebpackPlugin = require('replace-hash-in-file-webpack-plugin');
 
 module.exports = merge(common, {
     entry: {
@@ -84,15 +85,35 @@ module.exports = merge(common, {
             {
                 from: 'src/minimal_example.html',
                 to: 'minimal_example.html'
+            },
+            // {
+            //     from: 'src/babel_convert.html',
+            //     to: 'babel_convert.html'
+            // },
+            {
+                from: 'src/pdbqt_convert',
+                to: 'pdbqt_convert'
+            },
+            {
+                from: 'src/mol_editor',
+                to: 'mol_editor'
             }
         ]),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // all options are optional
             filename: '[name].[hash].css',
-            chunkFilename: '[name].[hash].[id].css',
+            chunkFilename: '[name].[hash].css',  // '[name].[hash].[id].css',
             ignoreOrder: false, // Enable to remove warnings about conflicting order
         }),
+        // new ReplaceHashInFileWebpackPlugin([{
+        //     dir: 'dist',
+        //     files: ['babel_convert.html'],
+        //     rules: [{
+        //         search: '{{HASH}}',
+        //         replace: '[hash]'
+        //     }]
+        // }]),
     ],
     module: {
         rules: [{

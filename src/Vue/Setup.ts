@@ -1,6 +1,6 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 
 
 import * as NumericInput from "../UI/Forms/NumericInput";
@@ -15,7 +15,9 @@ import * as FormGroup from "../UI/Forms/FormGroup";
 import * as ThreeDMol from "../UI/ThreeDMol";
 import * as TripleNumeric from "../UI/Forms/TripleNumeric";
 import * as ResultsTable from "../UI/ResultsTable";
-import * as OpenModal from "../UI/OpenModal";
+import * as OpenModal from "../UI/Modal/OpenModal";
+import * as ConvertFileModal from "../UI/Modal/ConvertFileModal";
+import * as DrawSmilesModal from "../UI/Modal/DrawSmilesModal";
 import * as SubSection from "../UI/SubSection";
 import * as VinaCommandline from "../UI/VinaCommandline";
 import * as FormButton from "../UI/Forms/FormButton";
@@ -37,6 +39,8 @@ export function setup(): void {
     FormButton.setup();
     VinaCommandline.setup();
     OpenModal.setup();
+    ConvertFileModal.setup();
+    DrawSmilesModal.setup();
     FormGroup.setup();
     ThreeDMol.setup();
     NumericInput.setup();

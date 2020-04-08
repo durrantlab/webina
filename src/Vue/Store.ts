@@ -1,6 +1,6 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 
 
 import * as Utils from "../Utils";
@@ -38,6 +38,12 @@ interface IModal {
     body: string;
 }
 
+interface IFileConvertModal {
+    ext: string;
+    type: string;
+    file: string;
+}
+
 export const store = new Vuex.Store({
     "state": {
         "vinaParams": {},
@@ -62,6 +68,11 @@ export const store = new Vuex.Store({
         "outputTabDisabled": true,
         "pdbOutputFrames": [],
         "stdOut": "",
+        "convertFileModalShow": false,
+        "convertFileExt": "PDB",
+        "convertFileType": "receptor",
+        "convertFile": null,
+        "drawSmilesModalShow": false,
         "modalShow": false,
         "modalTitle": "Title",
         "modalBody": "Some text here...",
@@ -183,7 +194,7 @@ export const store = new Vuex.Store({
 
         /**
          * Open the modal.
-         * @param  {any}    state    The VueX state.
+         * @param  {*}      state    The VueX state.
          * @param  {IModal} payload  An object with the title and body.
          * @returns void
          */
@@ -192,6 +203,34 @@ export const store = new Vuex.Store({
             state["modalBody"] = payload.body;
             state["modalShow"] = true;
             jQuery("body").removeClass("waiting");
+        },
+
+        /**
+         * Open the modal.
+         * @param  {*}                 state    The VueX state.
+         * @param  {IFileConvertModal} payload  An object with the ext, type,
+         *                                      and file.
+         * @returns void
+         */
+        "openConvertFileModal"(state: any, payload: IFileConvertModal): void {
+            state["convertFileModalShow"] = true;
+            state["convertFileExt"] = payload.ext;
+            state["convertFileType"] = payload.type;
+            state["convertFile"] = payload.file;
+            jQuery("body").removeClass("waiting");
+        },
+
+        /**
+         * Open the modal.
+         * @param  {*}                 state    The VueX state.
+         * @returns void
+         */
+        "drawSmilesModal"(state: any): void {
+            state["drawSmilesModalShow"] = true;
+            jQuery("body").removeClass("waiting");
         }
     }
 });
+
+// Good for debugging.
+window["store"] = store;

@@ -205,3 +205,8 @@ body.waiting, body.waiting * {
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+/* Enable word wrapping of different descriptions under file inputs. */
+div.col small {
+    line-height: 18px;
+}

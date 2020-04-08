@@ -1,6 +1,6 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 
 
 import * as Store from "../Vue/Store";
@@ -20,6 +20,8 @@ export function setup(): void {
         "template": `
             <div class="container-fluid">
                 <open-modal></open-modal>
+                <convert-file-modal></convert-file-modal>
+                <draw-smiles-modal></draw-smiles-modal>
                 <div id="no-mobile">
                     <b-jumbotron class="jumbo" header="Webina ${VERSION}" lead="AutoDock Vina Ported to WebAssembly">
                         <p>Webina ${VERSION} is not designed to work on mobile phones. Please use a device with a larger screen.</p>
