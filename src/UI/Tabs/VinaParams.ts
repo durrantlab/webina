@@ -8,6 +8,317 @@ import * as Utils from "../../Utils";
 declare var Vue;
 declare var Webina;
 
+/** An object containing the vue-component computed functions. */
+let computedFunctions = {
+    /**
+     * Whether to hide the vina docking-box parameters.
+     * @returns boolean  True if they should be hidden, false otherwise.
+     */
+    "hideDockingBoxParams"(): boolean {
+        return this.$store.state.hideDockingBoxParams;
+    },
+
+    // TODO: doc string
+    "showKeepProteinOnlyLink": {
+        get(): number {
+            return this.$store.state["showKeepProteinOnlyLink"];
+        },
+
+        set(val: number): void {
+            this.$store.commit("setVar", {
+                name: "showKeepProteinOnlyLink",
+                val: val
+            });
+        }
+    },
+}
+
+/** An object containing the vue-component methods functions. */
+let methodsFunctions = {
+    /**
+     * Runs when user indicates theye want to use example vina input files,
+     * rather than provide their own.
+     * @returns void
+     */
+    "useExampleVinaInputFiles"(): void {
+        this["showFileInputs"] = false;
+
+        setTimeout(() => {  // Vue.nextTick doesn't work...
+            // Update some values.
+            this.$store.commit("setVar", {
+                name: "receptorContents",
+                val: this.$store.state["receptorContentsExample"]
+            });
+
+            this.$store.commit("setVar", {
+                name: "ligandContents",
+                val: this.$store.state["ligandContentsExample"]
+            });
+            this.$store.commit("setVar", {
+                name: "crystalContents",
+                val: this.$store.state["crystalContentsExample"]
+            });
+            this.$store.commit("setVinaParam", {
+                name: "center_x",
+                val: 41.03
+            });
+            this.$store.commit("setVinaParam", {
+                name: "center_y",
+                val: 18.98
+            });
+            this.$store.commit("setVinaParam", {
+                name: "center_z",
+                val: 14.03
+            });
+            this.$store.commit("setVinaParam", {
+                name: "size_x",
+                val: 20.00
+            });
+            this.$store.commit("setVinaParam", {
+                name: "size_y",
+                val: 20.00
+            });
+            this.$store.commit("setVinaParam", {
+                name: "size_z",
+                val: 20.00
+            });
+
+            // These values should now validate.
+            let validateVars = [
+                "receptor", "ligand", "center_x", "center_y", "center_z",
+                "size_x", "size_y", "size_z"
+            ];
+            const validateVarsLen = validateVars.length;
+            for (let i = 0; i < validateVarsLen; i++) {
+                const validateVar = validateVars[i];
+                this.$store.commit("setValidationParam", {
+                    name: validateVar,
+                    val: true
+                });
+            }
+        }, 100);
+    },
+
+    /**
+     * Runs when the user presses the submit button.
+     * @returns void
+     */
+    "onSubmitClick"(): void {
+        if (this["validate"]() === true) {
+            this.$store.commit("disableTabs", {
+                "parametersTabDisabled": true,
+                "existingVinaOutputTabDisabled": true,
+                "runningTabDisabled": false,
+            });
+
+            jQuery("body").addClass("waiting");
+
+            Vue.nextTick(() => {
+                this.$store.commit("setVar", {
+                    name: "tabIdx",
+                    val: 2
+                });
+
+                Vue.nextTick(() => {
+                    // setTimeout(() => {
+                    //     this.afterWASM(this["testVinaOut"], this["testStdOut"]);
+                    // }, 1000);
+
+                    // Keep track of start time
+                    this.$store.commit("setVar", {
+                        name: "time",
+                        val: new Date().getTime()
+                    });
+
+                    Webina.start(
+                        this.$store.state["vinaParams"],
+                        this.$store.state["receptorContents"],
+                        this.$store.state["ligandContents"],
+
+                        // onDone
+                        (outPdbqtFileTxt: string, stdOut: string, stdErr: string) => {
+                            this.$store.commit("setVar", {
+                                name: "time",
+                                val: Math.round((new Date().getTime() - this.$store.state["time"]) / 100) / 10
+                            });
+
+                            this.afterWASM(outPdbqtFileTxt, stdOut, stdErr);
+                        },
+
+                        // onError
+                        (errObj: any) => {
+                            // Disable some tabs
+                            this.$store.commit("disableTabs", {
+                                "parametersTabDisabled": true,
+                                "existingVinaOutputTabDisabled": true,
+                                "runningTabDisabled": true,
+                                "outputTabDisabled": true,
+                                "startOverTabDisabled": false
+                            });
+
+                            this.showWebinaError(errObj["message"]);
+                        },
+                        Utils.curPath() + "Webina/"
+                    )
+                });
+            });
+        }
+    },
+
+    /**
+     * Opens the draw ligand modal.
+     * @param  {*} e  A click event so you can stop the propagation.
+     * @returns void
+     */
+    "onDrawLigClick"(e: any): void {
+        this.$store.commit("drawSmilesModal");
+        e.preventDefault();
+        e.stopPropagation();
+    },
+
+    // TODO: doc string
+    "onShowKeepProteinOnlyClick"(e: any): void {
+        let proteinResidues = [
+            "ALA", "ARG", "ASH", "ASN", "ASP", "ASX", "CYM", "CYS", "CYX",
+            "GLH", "GLN", "GLU", "GLX", "GLY", "HID", "HIE", "HIP", "HIS",
+            "HSD", "HSE", "HSP", "ILE", "LEU", "LYN", "LYS", "MET", "MSE",
+            "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL"
+        ];
+        let lines: string[] = this.$store.state["receptorContents"].split("\n");
+        let l = lines.length;
+        let linesToKeep = "";
+        for (let i = 0; i < l; i++) {
+            if ((lines[i].substr(0, 5) !== "ATOM ") && (lines[i].substr(0, 7) !== "HETATM ")) {
+                // Not an atom line.
+                continue;
+            }
+
+            if (proteinResidues.indexOf(lines[i].substr(17,3)) !== -1) {
+                linesToKeep += lines[i] + "\n";
+            }
+        }
+
+        this.$store.commit("setVar", {
+            name: "receptorContents",
+            val: linesToKeep
+        });
+
+        this["showKeepProteinOnlyLink"] = false;
+
+        e.preventDefault();
+        e.stopPropagation();
+    },
+
+    /**
+     * Determines whether all form values are valid.
+     * @param  {boolean=true} modalWarning  Whether to show a modal if
+     *                                      they are not valid.
+     * @returns boolean  True if they are valid, false otherwise.
+     */
+    "validate"(modalWarning: boolean=true): boolean {
+        let validations = this.$store.state["validation"];
+
+        let pass = true;
+
+        const paramName = Object.keys(validations);
+        const paramNameLen = paramName.length;
+        let badParams: string[] = [];
+        for (let i = 0; i < paramNameLen; i++) {
+            const name = paramName[i];
+
+            if (name === "output") {
+                // This one isn't part of the validation.
+                continue;
+            }
+
+            const valid = validations[name];
+            if (valid === false) {
+                pass = false;
+                badParams.push(name);
+            }
+        }
+
+        if (pass === false) {
+            if (modalWarning === true) {
+                this.$store.commit("openModal", {
+                    title: "Invalid Parameters!",
+                    body: "<p>Please correct the following parameter(s) before continuing: <code>" + badParams.join(" ") + "</code></p>"
+                });
+            }
+        }
+
+        this.$store.commit("setVar", {
+            name: "vinaParamsValidates",
+            val: pass
+        })
+
+        return pass;
+    },
+
+    /**
+     * Runs after the Vina WASM file is complete.
+     * @param  {string} outPdbqtFileTxt  The contents of the Vina output pdbqt file.
+     * @param  {string} stdOut           The contents of the Vina standard output.
+     * @param  {string} stdErr           The contents of the Vina standard error.
+     * @returns void
+     */
+    afterWASM(outPdbqtFileTxt: string, stdOut: string, stdErr: string): void {
+        // Disable some tabs
+        this.$store.commit("disableTabs", {
+            "parametersTabDisabled": true,
+            "existingVinaOutputTabDisabled": true,
+            "runningTabDisabled": true,
+            "outputTabDisabled": false,
+            "startOverTabDisabled": false
+        });
+
+        // Switch to output tab.
+        this.$store.commit("setVar", {
+            name: "tabIdx",
+            val: 3
+        });
+
+        this.$store.commit("setVar", {
+            name: "stdOut",
+            val: stdOut
+        });
+        this.$store.commit("setVar", {
+            name: "outputContents",
+            val: outPdbqtFileTxt
+        });
+
+        if (stdErr !== "") {
+            this.showWebinaError(stdErr);
+        }
+
+        // Process the standard output (extract scores and rmsds) and
+        // frames.
+        this.$store.commit("outputToData");
+
+        jQuery("body").removeClass("waiting");
+    },
+
+    /**
+     * Shows a Webina error.
+     * @param  {string} message  The error message.
+     * @returns void
+     */
+    showWebinaError(message: string): void {
+        this.$store.commit("openModal", {
+            title: "Webina Error!",
+            body: "<p>Webina returned the following error: <code>" + message + "</code></p>"
+        });
+    }
+}
+
+/**
+ * The vue-component mounted function.
+ * @returns void
+ */
+function mountedFunction(): void {
+    this["webAssemblyAvaialble"] = Utils.webAssemblySupported();
+}
+
 /**
  * Setup the vina-params Vue commponent.
  * @returns void
@@ -31,17 +342,26 @@ export function setup(): void {
                         <file-input
                             label="Receptor"
                             id="receptor"
-                            description="Formats: PDBQT (best), PDB, ENT, XYZ, PQR, MCIF, MMCIF. Be sure to add polar hydrogen atoms."
+                            description="Formats: PDBQT (best), PDB, ENT, XYZ, PQR, MCIF, MMCIF. If PDB, be sure to add polar hydrogen atoms."
                             accept=".pdbqt" convert=".pdb, .ent, .xyz, .pqr, .mcif, .mmcif"
-                        ></file-input>
+                        >
+                            <template v-slot:extraDescription>
+                                <span v-if="showKeepProteinOnlyLink">
+                                    <a href='' @click="onShowKeepProteinOnlyClick($event);">Automatically remove all non-protein atoms?</a>
+                                </span>
+                                <span v-else>
+                                    <b>(Removed all non-protein atoms!)</b>
+                                </span>
+                                </template>
+                        </file-input>
 
                         <file-input
                             label="Ligand"
                             id="ligand"
-                            description="Formats: PDBQT (best), CAN, MDL, MOL, MOL2, PDB, SD, SDF, SMI, SMILES, XYZ. Add hydrogens with <a target='_blank' href='https://git.durrantlab.pitt.edu/jdurrant/gypsum_dl'>Gypsum-DL</a>."
+                            description="Formats: PDBQT (best), CAN, MDL, MOL, MOL2, PDB, SD, SDF, SMI, SMILES, XYZ,"
                             accept=".pdbqt" convert=".can, .mdl, .mol, .mol2, .pdb, .sd, .sdf, .smi, .smiles, .xyz"
                         >
-                            <template v-slot:extraDescription>Or <a href='' @click="onDrawLigClick($event);">draw your ligand</a>.</template>
+                            <template v-slot:extraDescription>or <a href='' @click="onDrawLigClick($event);">draw your ligand</a>. We recommend preparing ligand files separately with <a target='_blank' href='https://git.durrantlab.pitt.edu/jdurrant/gypsum_dl'>Gypsum-DL</a>.</template>
                         </file-input>
 
                         <file-input
@@ -240,17 +560,7 @@ export function setup(): void {
             </div>
         `,
         "props": {},
-        "computed": {
-            /**
-             *
-             * Whether to hide the vina docking-box parameters.
-             * @returns boolean  True if they should be hidden, false
-             *                   otherwise.
-             */
-            "hideDockingBoxParams"(): boolean {
-                return this.$store.state.hideDockingBoxParams;
-            }
-        },
+        "computed": computedFunctions,
 
         /**
          * Get the data associated with this component.
@@ -259,259 +569,15 @@ export function setup(): void {
         "data"() {
             return {
                 "showFileInputs": true,
-                "webAssemblyAvaialble": true,
+                "webAssemblyAvaialble": true
             }
         },
-        "methods": {
-            /**
-             * Runs when user indicates theye want to use example vina input
-             * files, rather than provide their own.
-             * @returns void
-             */
-            "useExampleVinaInputFiles"(): void {
-                this["showFileInputs"] = false;
-
-                setTimeout(() => {  // Vue.nextTick doesn't work...
-                    // Update some values.
-                    this.$store.commit("setVar", {
-                        name: "receptorContents",
-                        val: this.$store.state["receptorContentsExample"]
-                    });
-
-                    this.$store.commit("setVar", {
-                        name: "ligandContents",
-                        val: this.$store.state["ligandContentsExample"]
-                    });
-                    this.$store.commit("setVar", {
-                        name: "crystalContents",
-                        val: this.$store.state["crystalContentsExample"]
-                    });
-                    this.$store.commit("setVinaParam", {
-                        name: "center_x",
-                        val: 41.03
-                    });
-                    this.$store.commit("setVinaParam", {
-                        name: "center_y",
-                        val: 18.98
-                    });
-                    this.$store.commit("setVinaParam", {
-                        name: "center_z",
-                        val: 14.03
-                    });
-                    this.$store.commit("setVinaParam", {
-                        name: "size_x",
-                        val: 20.00
-                    });
-                    this.$store.commit("setVinaParam", {
-                        name: "size_y",
-                        val: 20.00
-                    });
-                    this.$store.commit("setVinaParam", {
-                        name: "size_z",
-                        val: 20.00
-                    });
-
-                    // These values should now validate.
-                    let validateVars = [
-                        "receptor", "ligand", "center_x", "center_y", "center_z",
-                        "size_x", "size_y", "size_z"
-                    ];
-                    const validateVarsLen = validateVars.length;
-                    for (let i = 0; i < validateVarsLen; i++) {
-                        const validateVar = validateVars[i];
-                        this.$store.commit("setValidationParam", {
-                            name: validateVar,
-                            val: true
-                        });
-                    }
-                }, 100);
-            },
-
-            /**
-             * Runs when the user presses the submit button.
-             * @returns void
-             */
-            "onSubmitClick"(): void {
-                if (this["validate"]() === true) {
-                    this.$store.commit("disableTabs", {
-                        "parametersTabDisabled": true,
-                        "existingVinaOutputTabDisabled": true,
-                        "runningTabDisabled": false,
-                    });
-
-                    jQuery("body").addClass("waiting");
-
-                    Vue.nextTick(() => {
-                        this.$store.commit("setVar", {
-                            name: "tabIdx",
-                            val: 2
-                        });
-
-                        Vue.nextTick(() => {
-                            // setTimeout(() => {
-                            //     this.afterWASM(this["testVinaOut"], this["testStdOut"]);
-                            // }, 1000);
-
-                            // Keep track of start time
-                            this.$store.commit("setVar", {
-                                name: "time",
-                                val: new Date().getTime()
-                            });
-
-                            Webina.start(
-                                this.$store.state["vinaParams"],
-                                this.$store.state["receptorContents"],
-                                this.$store.state["ligandContents"],
-
-                                // onDone
-                                (outPdbqtFileTxt: string, stdOut: string, stdErr: string) => {
-                                    this.$store.commit("setVar", {
-                                        name: "time",
-                                        val: Math.round((new Date().getTime() - this.$store.state["time"]) / 100) / 10
-                                    });
-
-                                    this.afterWASM(outPdbqtFileTxt, stdOut, stdErr);
-                                },
-
-                                // onError
-                                (errObj: any) => {
-                                    // Disable some tabs
-                                    this.$store.commit("disableTabs", {
-                                        "parametersTabDisabled": true,
-                                        "existingVinaOutputTabDisabled": true,
-                                        "runningTabDisabled": true,
-                                        "outputTabDisabled": true,
-                                        "startOverTabDisabled": false
-                                    });
-
-                                    this.showWebinaError(errObj["message"]);
-                                },
-                                Utils.curPath() + "Webina/"
-                            )
-                        });
-                    });
-                }
-            },
-
-            /**
-             * Opens the draw ligand modal.
-             * @param  {*} e  A click event so you can stop the propagation.
-             * @returns void
-             */
-            "onDrawLigClick"(e: any): void {
-                this.$store.commit("drawSmilesModal");
-                e.preventDefault();
-                e.stopPropagation();
-            },
-
-            /**
-             * Determines whether all form values are valid.
-             * @param  {boolean=true} modalWarning  Whether to show a modal if
-             *                                      they are not valid.
-             * @returns boolean  True if they are valid, false otherwise.
-             */
-            "validate"(modalWarning: boolean=true): boolean {
-                let validations = this.$store.state["validation"];
-
-                let pass = true;
-
-                const paramName = Object.keys(validations);
-                const paramNameLen = paramName.length;
-                let badParams: string[] = [];
-                for (let i = 0; i < paramNameLen; i++) {
-                    const name = paramName[i];
-
-                    if (name === "output") {
-                        // This one isn't part of the validation.
-                        continue;
-                    }
-
-                    const valid = validations[name];
-                    if (valid === false) {
-                        pass = false;
-                        badParams.push(name);
-                    }
-                }
-
-                if (pass === false) {
-                    if (modalWarning === true) {
-                        this.$store.commit("openModal", {
-                            title: "Invalid Parameters!",
-                            body: "<p>Please correct the following parameter(s) before continuing: <code>" + badParams.join(" ") + "</code></p>"
-                        });
-                    }
-                }
-
-                this.$store.commit("setVar", {
-                    name: "vinaParamsValidates",
-                    val: pass
-                })
-
-                return pass;
-            },
-
-            /**
-             * Runs after the Vina WASM file is complete.
-             * @param  {string} outPdbqtFileTxt  The contents of the Vina output pdbqt file.
-             * @param  {string} stdOut           The contents of the Vina standard output.
-             * @param  {string} stdErr           The contents of the Vina standard error.
-             * @returns void
-             */
-            afterWASM(outPdbqtFileTxt: string, stdOut: string, stdErr: string): void {
-                // Disable some tabs
-                this.$store.commit("disableTabs", {
-                    "parametersTabDisabled": true,
-                    "existingVinaOutputTabDisabled": true,
-                    "runningTabDisabled": true,
-                    "outputTabDisabled": false,
-                    "startOverTabDisabled": false
-                });
-
-                // Switch to output tab.
-                this.$store.commit("setVar", {
-                    name: "tabIdx",
-                    val: 3
-                });
-
-                this.$store.commit("setVar", {
-                    name: "stdOut",
-                    val: stdOut
-                });
-                this.$store.commit("setVar", {
-                    name: "outputContents",
-                    val: outPdbqtFileTxt
-                });
-
-                if (stdErr !== "") {
-                    this.showWebinaError(stdErr);
-                }
-
-                // Process the standard output (extract scores and rmsds) and
-                // frames.
-                this.$store.commit("outputToData");
-
-                jQuery("body").removeClass("waiting");
-            },
-
-            /**
-             * Shows a Webina error.
-             * @param  {string} message  The error message.
-             * @returns void
-             */
-            showWebinaError(message: string): void {
-                this.$store.commit("openModal", {
-                    title: "Webina Error!",
-                    body: "<p>Webina returned the following error: <code>" + message + "</code></p>"
-                });
-            }
-        },
+        "methods": methodsFunctions,
 
         /**
          * Runs when the vue component is mounted.
          * @returns void
          */
-        "mounted"() {
-            this["webAssemblyAvaialble"] = Utils.webAssemblySupported();
-        }
+        "mounted": mountedFunction
     })
 }

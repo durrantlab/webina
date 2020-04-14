@@ -76,20 +76,12 @@ export function setup(): void {
             }
         },
         "computed": {
+            /** Gets and sets the tabIdx. */
             "tabIdx": {
-                /**
-                 * Get the tabIdx.
-                 * @returns number
-                 */
                 get(): number {
                     return this.$store.state["tabIdx"];
                 },
 
-                /**
-                 * Set the tabIdx value.
-                 * @param  {number} val  The new value.
-                 * @returns void
-                 */
                 set(val: number): void {
                     this.$store.commit("setVar", {
                         name: "tabIdx",

@@ -46,5 +46,8 @@ mv dist webina
 zip -r webina.zip webina
 mv webina dist
 
+# Build the docs while you're at it.
+. utils/build/make_docs.sh
+
 # Let the user know that compilation is finished. Works only on macOS.
 say "Beep"

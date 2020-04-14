@@ -5,6 +5,31 @@
 
 declare var Vue;
 
+/** An object containing the vue-component computed functions. */
+let computedFunctions = {
+    /** Gets and sets the vinaParams object. */
+    "val": {
+        get(): any {
+            return this.$store.state["vinaParams"][this["id"]];
+        },
+
+        set(val: any): void {
+            this.$store.commit("setVinaParam", {
+                name: this["id"],
+                val: val
+            });
+        }
+    },
+
+    /**
+     * Generates a description string.
+     * @returns string  The description.
+     */
+    "desc"(): string {
+        return this["description"] + (this["required"] !== true ? " (Leave blank to use default value.)" : "");
+    }
+}
+
 /**
  * Setup the check-box Vue commponent.
  * @returns void
@@ -18,47 +43,17 @@ export function setup(): void {
         "data": function() {
             return {}
         },
-        "computed": {
-            "val": {
-                /**
-                 * Get the value from the vinaParams object.
-                 * @returns any
-                 */
-                get(): any {
-                    return this.$store.state["vinaParams"][this["id"]];
-                },
-
-                /**
-                 * Set the vinaParams object value.
-                 * @param  {any} val  The new value.
-                 * @returns void
-                 */
-                set(val: any): void {
-                    this.$store.commit("setVinaParam", {
-                        name: this["id"],
-                        val: val
-                    });
-                }
-            },
-
-            /**
-             * Generates a description string.
-             * @returns string  The description.
-             */
-            "desc"(): string {
-                return this["description"] + (this["required"] !== true ? " (Leave blank to use default value.)" : "");
-            }
-        },
+        "computed": computedFunctions,
         "template": `
-        <b-form-checkbox
-            :id="id"
-            v-model="val"
-            :name="id"
-            :value="true"
-            :unchecked-value="false"
-        >
-            {{label}}
-        </b-form-checkbox>
+            <b-form-checkbox
+                :id="id"
+                v-model="val"
+                :name="id"
+                :value="true"
+                :unchecked-value="false"
+            >
+                {{label}}
+            </b-form-checkbox>
         `,
         "props": {
             "label": String,

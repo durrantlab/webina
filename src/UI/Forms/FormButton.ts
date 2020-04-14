@@ -5,6 +5,32 @@
 
 declare var Vue;
 
+/** An object containing the vue-component computed functions. */
+let computedFunctions = {
+    /**
+     * Determine which class to add to this button.
+     * @returns string  The classes.
+     */
+    "classToUse"(): string {
+        let classes = [this["cls"]];
+        if (this["small"] === true) {
+            classes.push("download-button float-right ml-1");
+        }
+        return classes.join(" ");
+    },
+
+    /**
+     * Determine which button size to use.
+     * @returns string  The size.
+     */
+    "sizeToUse"(): string {
+        if (this["small"] === true) {
+            return "sm";
+        }
+        return "";
+    }
+}
+
 /**
  * Setup the form-button Vue commponent.
  * @returns void
@@ -18,30 +44,7 @@ export function setup(): void {
         "data": function() {
             return {}
         },
-        "computed": {
-            /**
-             * Determine which class to add to this buttno.
-             * @returns string  The classes.
-             */
-            "classToUse"(): string {
-                let classes = [this["cls"]];
-                if (this["small"] === true) {
-                    classes.push("download-button float-right ml-1");
-                }
-                return classes.join(" ");
-            },
-
-            /**
-             * Determine which button size to use.
-             * @returns string  The size.
-             */
-            "sizeToUse"(): string {
-                if (this["small"] === true) {
-                    return "sm";
-                }
-                return "";
-            }
-        },
+        "computed": computedFunctions,
         "template": `
             <b-button :pill="small" :size="sizeToUse" :class="classToUse" :variant="variant"><slot></slot></b-button>
         `,

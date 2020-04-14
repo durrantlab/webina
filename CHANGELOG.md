@@ -14,9 +14,9 @@ WIP
 * Modified Webina so users can optionally use PDBQTConvert to convert their
   files. Webina communicates with PDBQTConvert at "arms length," via an
   iframe.
-* Added the ability to draw small-molecule ligands using the [PubChem
-  Sketcher](https://pubchem.ncbi.nlm.nih.gov/edit3/index.html) provided by the
-  NIH (embedded via an iframe).
+* Added the ability to draw small-molecule ligands.
+* Added technical documentation (see `docs/`).
+* Added link to optionally remove non-protein residues from the receptor.
 
 1.0.0
 -----

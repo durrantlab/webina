@@ -1,0 +1,8 @@
+center_x: 17.35687879
+center_y: 7.5200303
+center_z: 14.92545455
+size_x: 20
+size_y: 20
+size_z: 20
+exhaustiveness: 8
+seed: 123456789

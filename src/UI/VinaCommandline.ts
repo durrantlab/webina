@@ -4,6 +4,64 @@
 
 declare var Vue;
 
+/** An object containing the vue-component computed functions. */
+let computedFunctions = {
+    /**
+     * Determines whether the provided vina parameters validate.
+     * @returns boolean  True if the validate, false otherwise.
+     */
+    "vinaParamsValidate"(): boolean {
+        return this.$store.state["vinaParamsValidates"];
+    },
+
+    /**
+     * Generates a mock vina command line.
+     * @returns string  The mock command line.
+     */
+    "commandlineStr"(): string {
+        if (this.vinaParamsValidate === false) {
+            return "First fix parameter problems above..."
+        } else {
+            let params = this.$store.state["vinaParams"];
+
+            const paramNames = Object.keys(params);
+            const paramNamesLen = paramNames.length;
+            const keyValPairs = [];
+            for (let i = 0; i < paramNamesLen; i++) {
+                const paramName = paramNames[i];
+                const val = params[paramName];
+                if ((val !== false) && (val !== null) && (val !== undefined)) {
+                    let keyValPair = [paramName];
+                    if (typeof(val) !== "boolean") {
+                        keyValPair.push(val.toString())
+                    } else {
+                        keyValPair.push("")
+                    }
+                    keyValPairs.push(keyValPair);
+                }
+            }
+            keyValPairs.sort();
+
+            let cmdStr = "";
+            const keyValPairsLen = keyValPairs.length;
+            for (let i = 0; i < keyValPairsLen; i++) {
+                const keyValPair = keyValPairs[i];
+                const paramName = keyValPair[0];
+                const val = keyValPair[1];
+                cmdStr = cmdStr + " --" + paramName;
+                if (val !== "") {
+                    cmdStr = cmdStr + " " + val.toString();
+                }
+            }
+
+            return "/path/to/vina " +
+                    "--receptor " + this.$store.state["receptorFileName"] + " " +
+                    "--ligand " + this.$store.state["ligandFileName"] +
+                    cmdStr;
+        }
+    }
+}
+
 /**
  * Setup the vina-commandline Vue commponent.
  * @returns void
@@ -17,62 +75,7 @@ export function setup(): void {
         "data"() {
             return {}
         },
-        "computed": {
-            /**
-             * Determines whether the provided vina parameters validate.
-             * @returns boolean  True if the validate, false otherwise.
-             */
-            "vinaParamsValidate"(): boolean {
-                return this.$store.state["vinaParamsValidates"];
-            },
-
-            /**
-             * Generates a mock vina command line.
-             * @returns string  The mock command line.
-             */
-            "commandlineStr"(): string {
-                if (this.vinaParamsValidate === false) {
-                    return "First fix parameter problems above..."
-                } else {
-                    let params = this.$store.state["vinaParams"];
-
-                    const paramNames = Object.keys(params);
-                    const paramNamesLen = paramNames.length;
-                    const keyValPairs = [];
-                    for (let i = 0; i < paramNamesLen; i++) {
-                        const paramName = paramNames[i];
-                        const val = params[paramName];
-                        if ((val !== false) && (val !== null) && (val !== undefined)) {
-                            let keyValPair = [paramName];
-                            if (typeof(val) !== "boolean") {
-                                keyValPair.push(val.toString())
-                            } else {
-                                keyValPair.push("")
-                            }
-                            keyValPairs.push(keyValPair);
-                        }
-                    }
-                    keyValPairs.sort();
-
-                    let cmdStr = "";
-                    const keyValPairsLen = keyValPairs.length;
-                    for (let i = 0; i < keyValPairsLen; i++) {
-                        const keyValPair = keyValPairs[i];
-                        const paramName = keyValPair[0];
-                        const val = keyValPair[1];
-                        cmdStr = cmdStr + " --" + paramName;
-                        if (val !== "") {
-                            cmdStr = cmdStr + " " + val.toString();
-                        }
-                    }
-
-                    return "/path/to/vina " +
-                           "--receptor " + this.$store.state["receptorFileName"] + " " +
-                           "--ligand " + this.$store.state["ligandFileName"] +
-                           cmdStr;
-                }
-            }
-        },
+        "computed": computedFunctions,
         "template": `
             <sub-section v-if="vinaParamsValidate" title="Run Vina from the Command Line">
                 <p>

@@ -15,7 +15,7 @@
  */
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2019 Jacob D. Durrant.
+// details. Copyright 2020 Jacob D. Durrant.
 // There are a few variables and functions from vina.js that I want to easily
 // access from here.
 var VERSION = "1.0.0"; // Replaced by compile script.

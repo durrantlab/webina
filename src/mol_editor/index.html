@@ -29,9 +29,12 @@
                     .setAutoSetMinDimension(true)
                     .setAutoResizeConstraints({ width: 1, height: 1 })
                     .autoResizeToClient(); // force a resize to window client
-                console.log(Kekule.IO.saveFormatData(chemComposer.getChemObj(), 'smi'));
             }
             Kekule.X.domReady(init);
+
+            function getSmiles() {
+                return Kekule.IO.saveFormatData(chemComposer.getChemObj(), 'smi');
+            }
         </script>
         <style>
             html,
@@ -48,8 +51,17 @@
             button.K-Action-Open-Configurator,
             button.K-Chem-Toggle-Inspector,
             button.K-Chem-ArrowLineIaController,
-            button.K-Chem-TextImageIaController {
+            button.K-Chem-TextImageIaController,
+            span.K-Chem-Composer-Zoom-Toolbar {
                 display: none !important; /* You don't need save option */
+            }
+            .K-Chem-Composer .K-Chem-Editor {
+                overflow-x: hidden !important;
+                overflow-y: hidden !important;
+            }
+            div.K-Chem-Composer-Editor-Stage {
+                width: 99%;
+                height: 99%;
             }
         </style>
     </head>

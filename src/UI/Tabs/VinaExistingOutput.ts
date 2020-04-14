@@ -5,6 +5,112 @@
 
 declare var Vue;
 
+/** An object containing the vue-component methods functions. */
+let methodsFunctions = {
+    /**
+     * Runs when the user indicates he or she wants to use example
+     * output files rather than provide their own.
+     * @returns void
+     */
+    "useExampleOutputFiles"(): void {
+        // These values should now validate.
+        let validateVars = ["receptor", "output"];
+        const validateVarsLen = validateVars.length;
+        for (let i = 0; i < validateVarsLen; i++) {
+            const validateVar = validateVars[i];
+            this.$store.commit("setValidationParam", {
+                name: validateVar,
+                val: true
+            });
+        }
+
+        let promise = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.$store.commit("setVar", {
+                    name: "receptorContents",
+                    val: this.$store.state["receptorContentsExample"]
+                });
+                this.$store.commit("setVar", {
+                    name: "outputContents",
+                    val: this.$store.state["outputContentsExample"]
+                });
+                this.$store.commit("setVar", {
+                    name: "crystalContents",
+                    val: this.$store.state["crystalContentsExample"]
+                });
+                resolve();
+            }, 100);
+        })
+
+        this["onSubmitClick"](null, promise);
+    },
+
+    /**
+     * Runs when the user clicks the submit button.
+     * @param  {any}                    e        Not sure what this
+     *                                           is.
+     * @param  {Promise<any>=undefined} promise  A promise to continue
+     *                                           from.
+     * @returns void
+     */
+    "onSubmitClick"(e: any, promise: Promise<any>=undefined): void {
+        if (this["validate"]() === true) {
+            // Disable some tabs
+            this.$store.commit("disableTabs", {
+                "parametersTabDisabled": true,
+                "runningTabDisabled": true,
+                "existingVinaOutputTabDisabled": true,
+                "outputTabDisabled": false,
+                "startOverTabDisabled": false
+            });
+
+            // Switch to that tab.
+            Vue.nextTick(() => {
+                this.$store.commit("setVar", {
+                    name: "tabIdx",
+                    val: 3
+                });
+
+                if (promise !== undefined) {
+                    promise.then(() => {
+                        this.$store.commit("outputToData");
+                    });
+                } else {
+                    this.$store.commit("outputToData");
+                }
+            });
+        }
+    },
+
+    /**
+     * Determines whether valid parameters have been provided.
+     * Otherwise, cannot display the mock Vina output.
+     * @returns boolean  True if everything is valid, false otherwise.
+     */
+    "validate"(): boolean {
+        let validations = this.$store.state["validation"];
+
+        let badParams = [];
+        if (validations["receptor"] === false) {
+            badParams.push("receptor");
+        }
+        if (validations["output"] === false) {
+            badParams.push("output");
+        }
+
+        let validate = badParams.length === 0;
+
+        if (validate === false) {
+            this.$store.commit("openModal", {
+                title: "Invalid Parameters!",
+                body: "<p>Please correct the following parameter(s) before continuing: <code>" + badParams.join(" ") + "</code></p>"
+            });
+        }
+
+        return validate;
+    },
+}
+
 /**
  * Setup the vina-existing-output Vue commponent.
  * @returns void
@@ -61,109 +167,6 @@ export function setup(): void {
         "data"(): any {
             return {}
         },
-        "methods": {
-            /**
-             * Runs when the user indicates he or she wants to use example
-             * output files rather than provide their own.
-             * @returns void
-             */
-            "useExampleOutputFiles"(): void {
-                // These values should now validate.
-                let validateVars = ["receptor", "output"];
-                const validateVarsLen = validateVars.length;
-                for (let i = 0; i < validateVarsLen; i++) {
-                    const validateVar = validateVars[i];
-                    this.$store.commit("setValidationParam", {
-                        name: validateVar,
-                        val: true
-                    });
-                }
-
-                let promise = new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        this.$store.commit("setVar", {
-                            name: "receptorContents",
-                            val: this.$store.state["receptorContentsExample"]
-                        });
-                        this.$store.commit("setVar", {
-                            name: "outputContents",
-                            val: this.$store.state["outputContentsExample"]
-                        });
-                        this.$store.commit("setVar", {
-                            name: "crystalContents",
-                            val: this.$store.state["crystalContentsExample"]
-                        });
-                        resolve();
-                    }, 100);
-                })
-
-                this["onSubmitClick"](null, promise);
-            },
-
-            /**
-             * Runs when the user clicks the submit button.
-             * @param  {any}                    e        Not sure what this
-             *                                           is.
-             * @param  {Promise<any>=undefined} promise  A promise to continue
-             *                                           from.
-             * @returns void
-             */
-            "onSubmitClick"(e: any, promise: Promise<any>=undefined): void {
-                if (this["validate"]() === true) {
-                    // Disable some tabs
-                    this.$store.commit("disableTabs", {
-                        "parametersTabDisabled": true,
-                        "runningTabDisabled": true,
-                        "existingVinaOutputTabDisabled": true,
-                        "outputTabDisabled": false,
-                        "startOverTabDisabled": false
-                    });
-
-                    // Switch to that tab.
-                    Vue.nextTick(() => {
-                        this.$store.commit("setVar", {
-                            name: "tabIdx",
-                            val: 3
-                        });
-
-                        if (promise !== undefined) {
-                            promise.then(() => {
-                                this.$store.commit("outputToData");
-                            });
-                        } else {
-                            this.$store.commit("outputToData");
-                        }
-                    });
-                }
-            },
-
-            /**
-             * Determines whether valid parameters have been provided.
-             * Otherwise, cannot display the mock Vina output.
-             * @returns boolean  True if everything is valid, false otherwise.
-             */
-            "validate"(): boolean {
-                let validations = this.$store.state["validation"];
-
-                let badParams = [];
-                if (validations["receptor"] === false) {
-                    badParams.push("receptor");
-                }
-                if (validations["output"] === false) {
-                    badParams.push("output");
-                }
-
-                let validate = badParams.length === 0;
-
-                if (validate === false) {
-                    this.$store.commit("openModal", {
-                        title: "Invalid Parameters!",
-                        body: "<p>Please correct the following parameter(s) before continuing: <code>" + badParams.join(" ") + "</code></p>"
-                    });
-                }
-
-                return validate;
-            },
-        }
+        "methods": methodsFunctions
     })
 }

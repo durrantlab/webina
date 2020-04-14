@@ -104,11 +104,11 @@ let Webina = (function() {
                 "stdErr": "",
                 "print": function() {
                     return function(e) {
-                            1 < arguments.length && (
-                                e = Array.prototype.slice.call(arguments).join(" ")
-                            ),
-                            window["WEBINA_Module"]["stdOut"] += e + "\n"
-                        }
+                        1 < arguments.length && (
+                            e = Array.prototype.slice.call(arguments).join(" ")
+                        ),
+                        window["WEBINA_Module"]["stdOut"] += e + "\n"
+                    }
                 }(),
                 "printErr": function(e) {
                     // 1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" ")), console.error(e)
