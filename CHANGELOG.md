@@ -15,8 +15,10 @@ WIP
   files. Webina communicates with PDBQTConvert at "arms length," via an
   iframe.
 * Added the ability to draw small-molecule ligands.
-* Added technical documentation (see `docs/`).
 * Added link to optionally remove non-protein residues from the receptor.
+* Added technical documentation (see `docs/`).
+* Added the receptor and ligand PDBQT files used as examples in the
+  manuscript. See `docking_files/`.
 
 1.0.0
 -----
