@@ -1,6 +1,6 @@
-center_x:
-center_y:
-center_z:
+center_x: -37
+center_y: 6
+center_z: -7
 size_x: 16
 size_y: 20
 size_z: 14
