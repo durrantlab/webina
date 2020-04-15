@@ -6,7 +6,7 @@ WIP
 
 * Updated the "Run Vina from the Command Line" widget.
   * Fixed a minor bug that sometimes caused malformed example command lines.
-  * Added links so users can save the receptor and ligand PDBQT files
+  * Added links so users can save the receptor/ligand PDBQT input files
     generated within the app.
 * Created a separate, independent helper app called PDBQTConvert that can
   convert files in many other formats (e.g., PDB, XYZ, CAN, SMI) to PDBQT (see
