@@ -19,6 +19,9 @@ cd dist
 ls vendors*js runtime*js styles*js | awk '{print "echo Compiling " $1 ";node ../node_modules/google-closure-compiler/cli.js " $1 " > t; mv t " $1}' | bash
 cd -
 
+# If there is a .min.js file, delete any associated .js file.
+find dist/ -name "*.min.js" | sed "s/\.min\././g" | awk '{print "rm -rf " $0}' | bash
+
 # Add the license to the top of the app..js file. Tries using @license, but
 # closure compiler didn't put it right at the top.
 cd dist

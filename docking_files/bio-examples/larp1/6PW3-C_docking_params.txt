@@ -1,7 +1,7 @@
-center_x:
-center_y:
-center_z:
-size_x:
-size_y:
-size_z:
+center_x: -2
+center_y: 14.5
+center_z: -23
+size_x: 16
+size_y: 17
+size_z: 17
 exhaustiveness: 20
