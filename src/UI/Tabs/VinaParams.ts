@@ -18,7 +18,7 @@ let computedFunctions = {
         return this.$store.state.hideDockingBoxParams;
     },
 
-    // TODO: doc string
+    /** Whether to show the keep-protein-only link. Has both a getter and a setter. */
     "showKeepProteinOnlyLink": {
         get(): number {
             return this.$store.state["showKeepProteinOnlyLink"];
@@ -82,6 +82,10 @@ let methodsFunctions = {
                 name: "size_z",
                 val: 20.00
             });
+
+            // Also update file names so example vina command line is valid.
+            this.$store.commit("updateFileName", { type: "ligand", filename: "ligand_example.pdbqt" });
+            this.$store.commit("updateFileName", { type: "receptor", filename: "receptor_example.pdbqt" });
 
             // These values should now validate.
             let validateVars = [
@@ -176,7 +180,11 @@ let methodsFunctions = {
         e.stopPropagation();
     },
 
-    // TODO: doc string
+    /**
+     * Removes residues from protein model that are not protein amino acids.
+     * @param  {any} e  The click event.
+     * @returns void
+     */
     "onShowKeepProteinOnlyClick"(e: any): void {
         let proteinResidues = [
             "ALA", "ARG", "ASH", "ASN", "ASP", "ASX", "CYM", "CYS", "CYX",
@@ -201,6 +209,14 @@ let methodsFunctions = {
         this.$store.commit("setVar", {
             name: "receptorContents",
             val: linesToKeep
+        });
+
+        this.$store.commit("updateFileName", {
+            type: "receptor",
+            filename: Utils.replaceExt(
+                this.$store.state["receptorFileName"],
+                "protein.pdbqt"
+            )
         });
 
         this["showKeepProteinOnlyLink"] = false;
@@ -352,7 +368,7 @@ export function setup(): void {
                                 <span v-else>
                                     <b>(Removed all non-protein atoms!)</b>
                                 </span>
-                                </template>
+                            </template>
                         </file-input>
 
                         <file-input

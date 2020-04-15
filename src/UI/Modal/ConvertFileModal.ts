@@ -2,6 +2,8 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import * as Utils from "../../Utils";
+
 declare var Vue;
 
 /** An object containing the vue-component computed functions. */
@@ -83,9 +85,10 @@ let methodsFunctions = {
                 name: this["currentType"] + "Contents",
                 val: out
             });
+
             this["$refs"]["convert-modal"].hide();
 
-            // This makes it ook like it validated.
+            // This makes it look like it validated.
             this.$store.commit("setVar", {
                 name: this["currentType"] + "ForceValidate",
                 val: true
@@ -96,6 +99,10 @@ let methodsFunctions = {
                 name: this["currentType"],
                 val: true
             });
+
+            // Update the filename to end in pdbqt.
+            let newFilename = Utils.replaceExt(this.$store.state[this["currentType"] + "FileName"], "converted.pdbqt");
+            this.$store.commit("updateFileName", { type: this["currentType"], filename: newFilename });
         }).catch((msg) => {
             this["$refs"]["convert-modal"].hide();
             this["$bvModal"]["msgBoxOk"]("Could not convert your file. Are you sure it is a properly formatted " + this["currentExt"] + " file?", {
@@ -105,6 +112,7 @@ let methodsFunctions = {
                 name: this["currentType"] + "ForceValidate",
                 val: false
             });
+            this.$store.commit("updateFileName", { type: this["currentType"], filename: "" });
             console.log("ERROR: " + msg);
         });
 
@@ -123,6 +131,8 @@ let methodsFunctions = {
             name: this["currentType"],
             val: false
         });
+
+        this.$store.commit("updateFileName", { type: this["currentType"], filename: "" });
     },
     "reloadIFrame"() {
         document.getElementById("convert-frame")["src"] = "./pdbqt_convert/index.html?startBlank";

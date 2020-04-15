@@ -67,3 +67,16 @@ export function curPath(): string {
     }
     return url;
 }
+/**
+ * Given a filename, replace its extension.
+ * @param  {string} filename  The original filename.
+ * @param  {string} newExt    The new extension.
+ * @returns string  The new filename.
+ */
+export function replaceExt(filename: string, newExt: string): string {
+    if (filename.indexOf(".") !== -1) {
+        let prts = filename.split(".");
+        filename = prts.slice(0, prts.length - 1).join(".");
+    }
+    return filename + "." + newExt;
+}

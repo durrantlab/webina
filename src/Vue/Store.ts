@@ -44,6 +44,11 @@ interface IFileConvertModal {
     file: string;
 }
 
+interface IInputFileNames {
+    type: string;
+    filename: string;
+}
+
 export const store = new Vuex.Store({
     "state": {
         "vinaParams": {},
@@ -231,6 +236,18 @@ export const store = new Vuex.Store({
         "drawSmilesModal"(state: any): void {
             state["drawSmilesModalShow"] = true;
             jQuery("body").removeClass("waiting");
+        },
+
+        /**
+         * Update the filenames of the receptor and ligand input files.
+         * @param  {any}             state    The VueX state.
+         * @param  {IInputFileNames} payload  An object describing the
+         *                                    filename change.
+         * @returns void
+         */
+        "updateFileName"(state: any, payload: IInputFileNames): void {
+            // Also update file names so example vina command line is valid.
+            state[payload.type + "FileName"] = payload.filename;
         }
     }
 });

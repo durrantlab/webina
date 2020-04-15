@@ -17,7 +17,7 @@ We have tested the Webina library on macOS 10.14.5, Windows 10 Home 1803, and
 Ubuntu 18.04.3 LTS. Webina uses the SharedArrayBuffer JavaScript object to
 allow multiple processes/threads to exchange data directly. This object is
 currently available on Chromium-based browsers such as Google Chrome.
-AAdditional browsers are likely to enable SharedArrayBuffer soon.
+Additional browsers are likely to enable SharedArrayBuffer soon.
 
 ## Repository Contents ##
 
@@ -37,6 +37,68 @@ AAdditional browsers are likely to enable SharedArrayBuffer soon.
 * `CHANGELOG.md`, `CONTRIBUTORS.md`, `README.md`: Documentation files.
 
 ## Description of Use ##
+
+### Preparing Receptor/Ligand PDBQT Input Files ###
+
+As is the case with command-line Vina, Webina accepts input receptor and
+ligand files in the PDBQT format. The latest version of the Webina app
+interfaces with the PDBQTConvert app (included in the git repository) to
+convert these files from other formats (e.g., PDB) to PDBQT. But some advanced
+users may wish to provide their own PDBQT files. Such users include:
+
+* Users who wish to have more fine-grained control over the input. For
+  example, users who wish to specify protonation states, ring-conformational
+  forms, etc.
+* Users who wish to access the Webina JavaScript Library itself, independent
+  of our user-friendly Webina app. The library itself is simply Vina compiled
+  to WebAssembly. It cannot convert files because Vina cannot convert files,
+  so users must provide their own PDBQT files.
+
+#### Preparing the Receptor PDBQT File ####
+
+We recommend the following steps for those who wish to provide their own
+receptor PDBQT files:
+
+* Download the PDB file from the [Protein Data Bank](https://www.rcsb.org/).
+* Remove any ligands, ions, co-factors, water molecules, etc. that might
+  interfere with docking. Editing the PDB file in a text editor (e.g.,
+  [Notepad++](https://notepad-plus-plus.org/)) and deleting the appropriate
+  `ATOM` and `HETATM` records is perhaps the easiest way to remove these
+  components.
+* Assign hydrogen atoms to the protein model. We recommend using the [PDB2PQR
+  server](http://apbs-rest-test.westus2.cloudapp.azure.com/), an online
+  website that adds hydrogen atoms per a user-specified pH.
+* Convert to the PDBQT format. The PDB2PQR server will produce a PQR file that
+  includes hydrogen atoms. The simplest way to convert this file to PDBQT is
+  with the free program [Open Babel](http://openbabel.org/wiki/Main_Page).
+  Here is an example command: `obabel -xr -ipqr my_receptor.pqr -O
+  my_receptor.pdbqt`
+
+##### Preparing the Ligand PDBQT File #####
+
+We recommend the following steps for those who wish to provide their own
+ligand PDBQT files:
+
+* Obtain a copy of your ligand file in SMILES-string or SDF format. Many
+  molecular databases provide small-molecule files in these common formats. If
+  necessary, you can convert to these formats using [Open
+  Babel](http://openbabel.org/wiki/Main_Page). Many [online molecular
+  editors](https://pubchem.ncbi.nlm.nih.gov/edit3/index.html) also generate
+  SMILES strings by letting users draw their molecules.
+* Generate 3D models of your ligand. We recommend using the program
+  [Gypsum-DL](https://durrantlab.pitt.edu/gypsum-dl/) to generate high-quality
+  models that account for alternate ionization, tautomeric, chiral, cis/trans
+  isomeric, and ring-conformational states (see [the
+  documentation](https://durrantlab.pitt.edu/gypsum-dl/) for a description of
+  use).
+* Convert to PDBQT. Gypsum-DL will output ligand models in the SDF format. You
+  can convert these to PDBQT using [Open
+  Babel](http://openbabel.org/wiki/Main_Page) like this: `obabel -isdf
+  gypsum_output.sdf -O gypsum_output.pdbqt`
+* It is also possible to convert directly from a SMILES or SDF file using only
+  Open Babel, though Open Babel lacks some of the features Gypsum-DL provides.
+  Here is an example command line: `obabel --gen3d -p -ismi ligand.smi -O
+  ligand.pdbqt`
 
 ### Webina JavaScript Library ###
 
@@ -80,7 +142,9 @@ receptor, ligand, and known-pose files.
 __Docking Box.__ The "Docking Box" subsection allows users to specify the
 region of the receptor where Webina should attempt to pose the ligand. This
 box-shaped volume is typically centered on a known protein pocket or cavity
-where a small-molecule ligand might reasonably bind.
+where a small-molecule ligand might reasonably bind. If the box is large
+enough to encompass the whole protein, Webina will attempt full-surface
+docking (though so broad a search is not recommended).
 
 To simplify the process of selecting a docking box, the Webina web app
 automatically displays 3D models of the user-specified receptor and ligand
@@ -161,7 +225,7 @@ generate the displayed Webina output.
 #### Start Over Tab ####
 
 The "Start Over" tab displays a simple button that allows the user to restart
-the Webina app. A warning message reminds the user that they will loose the
+the Webina app. A warning message reminds the user that they will lose the
 results of the current Webina run unless they have saved their output files.
 
 ## Running Webina on Your Own Computer ##

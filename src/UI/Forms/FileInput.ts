@@ -32,6 +32,12 @@ let computedFunctions = {
                 .map((e) => e.replace(/ /g, "").replace(/\./, ""));
 
             if (convertExt.indexOf(ext) !== -1) {
+                // Set the filename.
+                this.$store.commit("updateFileName", {
+                    type: this["id"],
+                    filename: val.name,
+                });
+
                 this.getModelFileContents(val).then((text: string) => {
                     this.$store.commit("openConvertFileModal", {
                         ext: ext,
@@ -43,17 +49,19 @@ let computedFunctions = {
             } else if (acceptableExt.indexOf(ext) === -1) {
                 // It is not one of the acceptable extensions that can be
                 // converted to pdbqt. Need to cancel.
+                let extsAllowed = acceptableExt.concat(convertExt);
+
                 let msg = "The file must end in ";
-                if (acceptableExt.length > 1) {
-                    acceptableExt[acceptableExt.length - 1] =
-                        "or " + acceptableExt[acceptableExt.length - 1];
+                if (extsAllowed.length > 1) {
+                    extsAllowed[extsAllowed.length - 1] =
+                        "or " + extsAllowed[extsAllowed.length - 1];
                 }
 
                 let okFilesString: string;
-                if (acceptableExt.length > 2) {
-                    okFilesString = acceptableExt.join('," "');
+                if (extsAllowed.length > 2) {
+                    okFilesString = extsAllowed.join('," "');
                 } else {
-                    okFilesString = acceptableExt.join('" "');
+                    okFilesString = extsAllowed.join('" "');
                 }
 
                 okFilesString = okFilesString.replace(/"or /g, 'or "');
@@ -74,9 +82,9 @@ let computedFunctions = {
                 val: true,
             });
 
-            this.$store.commit("setVar", {
-                name: this["id"] + "FileName",
-                val: val.name,
+            this.$store.commit("updateFileName", {
+                type: this["id"],
+                filename: val.name,
             });
 
             this.getModelFileContents(this["file"]).then((text: string) => {

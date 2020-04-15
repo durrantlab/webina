@@ -85,7 +85,7 @@
 					Ubuntu 18.04.3 LTS. Webina uses the SharedArrayBuffer JavaScript object to
 					allow multiple processes/threads to exchange data directly. This object is
 					currently available on Chromium-based browsers such as Google Chrome.
-				AAdditional browsers are likely to enable SharedArrayBuffer soon.</p>
+				Additional browsers are likely to enable SharedArrayBuffer soon.</p>
 				<a href="#repository-contents" id="repository-contents" style="color: inherit; text-decoration: none;">
 					<h2>Repository Contents</h2>
 				</a>
@@ -110,6 +110,71 @@
 				<a href="#description-of-use" id="description-of-use" style="color: inherit; text-decoration: none;">
 					<h2>Description of Use</h2>
 				</a>
+				<a href="#preparing-receptorligand-pdbqt-input-files" id="preparing-receptorligand-pdbqt-input-files" style="color: inherit; text-decoration: none;">
+					<h3>Preparing Receptor/Ligand PDBQT Input Files</h3>
+				</a>
+				<p>As is the case with command-line Vina, Webina accepts input receptor and
+					ligand files in the PDBQT format. The latest version of the Webina app
+					interfaces with the PDBQTConvert app (included in the git repository) to
+					convert these files from other formats (e.g., PDB) to PDBQT. But some advanced
+				users may wish to provide their own PDBQT files. Such users include:</p>
+				<ul>
+					<li>Users who wish to have more fine-grained control over the input. For
+						example, users who wish to specify protonation states, ring-conformational
+					forms, etc.</li>
+					<li>Users who wish to access the Webina JavaScript Library itself, independent
+						of our user-friendly Webina app. The library itself is simply Vina compiled
+						to WebAssembly. It cannot convert files because Vina cannot convert files,
+					so users must provide their own PDBQT files.</li>
+				</ul>
+				<a href="#preparing-the-receptor-pdbqt-file" id="preparing-the-receptor-pdbqt-file" style="color: inherit; text-decoration: none;">
+					<h4>Preparing the Receptor PDBQT File</h4>
+				</a>
+				<p>We recommend the following steps for those who wish to provide their own
+				receptor PDBQT files:</p>
+				<ul>
+					<li>Download the PDB file from the <a href="https://www.rcsb.org/">Protein Data Bank</a>.</li>
+					<li>Remove any ligands, ions, co-factors, water molecules, etc. that might
+						interfere with docking. Editing the PDB file in a text editor (e.g.,
+						<a href="https://notepad-plus-plus.org/">Notepad++</a>) and deleting the appropriate
+						<code>ATOM</code> and <code>HETATM</code> records is perhaps the easiest way to remove these
+					components.</li>
+					<li>Assign hydrogen atoms to the protein model. We recommend using the <a href="http://apbs-rest-test.westus2.cloudapp.azure.com/">PDB2PQR
+						server</a>, an online
+					website that adds hydrogen atoms per a user-specified pH.</li>
+					<li>Convert to the PDBQT format. The PDB2PQR server will produce a PQR file that
+						includes hydrogen atoms. The simplest way to convert this file to PDBQT is
+						with the free program <a href="http://openbabel.org/wiki/Main_Page">Open Babel</a>.
+						Here is an example command: <code>obabel -xr -ipqr my_receptor.pqr -O
+my_receptor.pdbqt</code></li>
+				</ul>
+				<a href="#preparing-the-ligand-pdbqt-file" id="preparing-the-ligand-pdbqt-file" style="color: inherit; text-decoration: none;">
+					<h5>Preparing the Ligand PDBQT File</h5>
+				</a>
+				<p>We recommend the following steps for those who wish to provide their own
+				ligand PDBQT files:</p>
+				<ul>
+					<li>Obtain a copy of your ligand file in SMILES-string or SDF format. Many
+						molecular databases provide small-molecule files in these common formats. If
+						necessary, you can convert to these formats using <a href="http://openbabel.org/wiki/Main_Page">Open
+							Babel</a>. Many <a href="https://pubchem.ncbi.nlm.nih.gov/edit3/index.html">online molecular
+						editors</a> also generate
+					SMILES strings by letting users draw their molecules.</li>
+					<li>Generate 3D models of your ligand. We recommend using the program
+						<a href="https://durrantlab.pitt.edu/gypsum-dl/">Gypsum-DL</a> to generate high-quality
+						models that account for alternate ionization, tautomeric, chiral, cis/trans
+						isomeric, and ring-conformational states (see <a href="https://durrantlab.pitt.edu/gypsum-dl/">the
+						documentation</a> for a description of
+					use).</li>
+					<li>Convert to PDBQT. Gypsum-DL will output ligand models in the SDF format. You
+						can convert these to PDBQT using <a href="http://openbabel.org/wiki/Main_Page">Open
+						Babel</a> like this: <code>obabel -isdf
+gypsum_output.sdf -O gypsum_output.pdbqt</code></li>
+					<li>It is also possible to convert directly from a SMILES or SDF file using only
+						Open Babel, though Open Babel lacks some of the features Gypsum-DL provides.
+						Here is an example command line: <code>obabel --gen3d -p -ismi ligand.smi -O
+ligand.pdbqt</code></li>
+				</ul>
 				<a href="#webina-javascript-library" id="webina-javascript-library" style="color: inherit; text-decoration: none;">
 					<h3>Webina JavaScript Library</h3>
 				</a>
@@ -150,7 +215,9 @@
 				<p><strong>Docking Box.</strong> The &quot;Docking Box&quot; subsection allows users to specify the
 					region of the receptor where Webina should attempt to pose the ligand. This
 					box-shaped volume is typically centered on a known protein pocket or cavity
-				where a small-molecule ligand might reasonably bind.</p>
+					where a small-molecule ligand might reasonably bind. If the box is large
+					enough to encompass the whole protein, Webina will attempt full-surface
+				docking (though so broad a search is not recommended).</p>
 				<p>To simplify the process of selecting a docking box, the Webina web app
 					automatically displays 3D models of the user-specified receptor and ligand
 					using the <a href="https://3dmol.csb.pitt.edu/">3Dmol.js JavaScript library</a>. By
@@ -222,7 +289,7 @@
 					<h4>Start Over Tab</h4>
 				</a>
 				<p>The &quot;Start Over&quot; tab displays a simple button that allows the user to restart
-					the Webina app. A warning message reminds the user that they will loose the
+					the Webina app. A warning message reminds the user that they will lose the
 				results of the current Webina run unless they have saved their output files.</p>
 				<a href="#running-webina-on-your-own-computer" id="running-webina-on-your-own-computer" style="color: inherit; text-decoration: none;">
 					<h2>Running Webina on Your Own Computer</h2>

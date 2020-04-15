@@ -38,6 +38,7 @@ let methodsFunctions = {
                     name: "crystalContents",
                     val: this.$store.state["crystalContentsExample"]
                 });
+
                 resolve();
             }, 100);
         })

@@ -3,6 +3,7 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 declare var Vue;
+declare var FileSaver;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -59,6 +60,42 @@ let computedFunctions = {
                     "--ligand " + this.$store.state["ligandFileName"] +
                     cmdStr;
         }
+    },
+
+    /**
+     * Gets the receptor file name from the VueX store.
+     * @returns string  The receptor file name.
+     */
+    "receptorFileName"(): string {
+        return this.$store.state["receptorFileName"];
+    },
+
+    /**
+     * Gets the ligand file name from the VueX store.
+     * @returns string  The ligand file name.
+     */
+    "ligandFileName"(): string {
+        return this.$store.state["ligandFileName"];
+    }
+}
+
+/** An object containing the vue-component methods functions. */
+let methodsFunctions = {
+
+    /**
+     * Downloads either the receptor or ligand files.
+     * @param  {*}      e     The click event.
+     * @param  {string} type  The type of file, either "receptor" or "ligand".
+     * @returns void
+     */
+    "downloadFile"(e: any, type: string): void {
+        var blob = new Blob([this.$store.state[type + "Contents"]], {
+            type: "text/plain;charset=utf-8"
+        });
+        FileSaver.saveAs(blob, this.$store.state[type + "FileName"]);
+
+        e.preventDefault();
+        e.stopPropagation();
     }
 }
 
@@ -76,6 +113,7 @@ export function setup(): void {
             return {}
         },
         "computed": computedFunctions,
+        "methods": methodsFunctions,
         "template": `
             <sub-section v-if="vinaParamsValidate" title="Run Vina from the Command Line">
                 <p>
@@ -94,6 +132,11 @@ export function setup(): void {
                         type="text"
                         readonly
                     ></b-form-input>
+
+                    <template v-slot:extraDescription>
+                        Click to download the <a href="" @click="downloadFile($event, 'receptor');">receptor</a>
+                        and <a href="" @click="downloadFile($event, 'ligand');">ligand</a> PDBQT files.
+                    </template>
                 </form-group>
             </sub-section>
         `,
