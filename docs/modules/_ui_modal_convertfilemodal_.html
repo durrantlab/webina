@@ -117,7 +117,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in UI/Modal/ConvertFileModal.ts:146</li>
+									<li>Defined in UI/Modal/ConvertFileModal.ts:226</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -294,22 +294,48 @@
 						<a name="methodsfunctions.beginconvert" class="tsd-anchor"></a>
 						<h3>begin<wbr>Convert</h3>
 						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
-							<li class="tsd-signature tsd-kind-icon">begin<wbr>Convert<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							<li class="tsd-signature tsd-kind-icon">begin<wbr>Convert<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, currentPDBOptimizationLevel<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, successMsg<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 						</ul>
 						<ul class="tsd-descriptions">
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in UI/Modal/ConvertFileModal.ts:62</li>
+										<li>Defined in UI/Modal/ConvertFileModal.ts:74</li>
 									</ul>
 								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Begin to convert the file to PDBQT.</p>
+									</div>
+								</div>
 								<h4 class="tsd-parameters-title">Parameters</h4>
 								<ul class="tsd-parameters">
 									<li>
 										<h5>e: <span class="tsd-signature-type">any</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<p>The click event.</p>
+										</div>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> currentPDBOptimizationLevel: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<p>To what extent the PDB
+												file should be
+												optimized (to keep size
+											low for converting).</p>
+										</div>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> successMsg: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;&quot;</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<p>The message to display
+												to the user on success
+											(if any).</p>
+										</div>
 									</li>
 								</ul>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								<p>void</p>
 							</li>
 						</ul>
 					</section>
@@ -323,10 +349,51 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in UI/Modal/ConvertFileModal.ts:122</li>
+										<li>Defined in UI/Modal/ConvertFileModal.ts:197</li>
 									</ul>
 								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The cancel button is pressed.</p>
+									</div>
+								</div>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								<p>void</p>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
+						<a name="methodsfunctions.pdboptimization" class="tsd-anchor"></a>
+						<h3>pdb<wbr>Optimization</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
+							<li class="tsd-signature tsd-kind-icon">pdb<wbr>Optimization<span class="tsd-signature-symbol">(</span>level<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in UI/Modal/ConvertFileModal.ts:161</li>
+									</ul>
+								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>PDB files are very common, yet openbabel.js cannot convert them if they
+											are too large. Here we make efforts to &quot;optimize&quot; the PDB file to
+										maximize the changes that openbabel.js will succeed.</p>
+									</div>
+								</div>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>level: <span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<p>The optimization level.</p>
+										</div>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+								<p>string  A message to show the user re. any modifications made
+								to the PDB file.</p>
 							</li>
 						</ul>
 					</section>
@@ -340,10 +407,16 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in UI/Modal/ConvertFileModal.ts:137</li>
+										<li>Defined in UI/Modal/ConvertFileModal.ts:217</li>
 									</ul>
 								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Reload the iframe containing the PDBConvert app.</p>
+									</div>
+								</div>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								<p>void</p>
 							</li>
 						</ul>
 					</section>

@@ -89,6 +89,7 @@ let methodsFunctions = {
             this["gen3D"] = false;
         }
 
+        frameWindow.document.querySelector("html").style.overflow = "hidden";
         frameWindow["PDBQTConvert"]["convert"](
             content,
             this["currentExt"].toLowerCase(),
@@ -121,7 +122,7 @@ let methodsFunctions = {
             this.$store.commit("updateFileName", { type: this["currentType"], filename: newFilename });
 
             if (successMsg !== "") {
-                this["$bvModal"]["msgBoxOk"]("To convert your file, Webina had to make the following modifications: " + successMsg, {
+                this["$bvModal"]["msgBoxOk"]("To convert your file to PDBQT, Webina had to make the following modifications: " + successMsg, {
                     "title": "Warning: File Too Big!",
                 });
             }
@@ -177,7 +178,7 @@ let methodsFunctions = {
                 // Keep only the first chain.
                 let chain = pdbTxt.slice(21,22);
                 pdbTxt = pdbTxt.split("\n").filter(l => l.slice(21,22) === chain).join("\n");
-                msg += " (1) Keep only the first chain (chain " + chain + ").";
+                msg += " (2) Keep only the first chain (chain " + chain + ").";
                 break;
         }
 

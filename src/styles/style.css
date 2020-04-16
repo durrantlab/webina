@@ -168,7 +168,7 @@ td {
 /** Let user know that mobile is no go */
 
 #no-mobile {
-    position: absolute;
+    position: fixed;
     left: 0px;
     top: 0px;
     width: 100%;
