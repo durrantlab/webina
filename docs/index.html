@@ -110,45 +110,15 @@
 				<a href="#description-of-use" id="description-of-use" style="color: inherit; text-decoration: none;">
 					<h2>Description of Use</h2>
 				</a>
-				<a href="#pdbqtconvert-web-app" id="pdbqtconvert-web-app" style="color: inherit; text-decoration: none;">
-					<h3>PDBQTConvert Web App</h3>
-				</a>
-				<p>We created the PDBQTConvert web app to better accomodate novice users. Like
-					Vina, the Webina library accepts receptor/ligand input files only in the PDBQT
-					format, a PDB-like format that additionally includes atom types and partial
-					atomic charges. As described in the &quot;Webina and Vina Benchmarks&quot; section
-					below, a number of command-line and other programs are available for
-					converting receptor/ligand input files from popular formats (e.g., PDB, SDF,
-					etc.) to PDBQT. But PDBQTConvert provides an easier way to prepare these files
-					using a Bootstrap4-powered GUI in the browser. We distribute the PDBQTConvert
-					app alongside Webina, but as an entirely separate program. Unlike the Webina
-				library/app codebase, the PDBQTConvert app is GPLv2 licensed, not Apache-2.0.</p>
-				<p>PDBQTConvert uses the <a href="https://github.com/partridgejiang/cheminfo-to-web/tree/master/OpenBabel/OpenBabel-js">OpenBabel JS
-					library</a>
-					to convert receptor and ligand input files from many common formats (i.e.,
-					CAN, ENT, MCIF, MDL, MMCIF, MOL, MOL2, PDB, PQR, SD, SDF, SMI, SMILES, and
-					XYZ) to the Webina-compatible PDBQT format. The app can optionally include
-					branches and torsion trees, as required to indicate which ligand bonds should
-				be considered rotatable during Webina/Vina docking.</p>
-				<p>A second option instructs PDBQTConvert to add hydrogen atoms per a
-					user-specified pH. This feature is particularly useful because PDB receptor
-					structures derived via X-ray crystallography often lack the resolution
-					required to place hydrogen atoms, and many popular ligand formats (e.g.,
-					SMILES strings) do not enumerate explicit hydrogen atoms. And yet Webina/Vina
-					docking does require that receptor/ligand PDBQT files include polar hydrogen
-				atoms.</p>
-				<p>A third option instructs PDBQTConvert to generate 3D coordinates for the input
-					molecule. Many popular ligand formats (e.g., SMILES strings, flat SDF files,
-					etc.) do not include 3D atomic coordinates, but Webina/Vina docking requires
-				fully 3D models.</p>
 				<a href="#receptorligand-pdbqt-input-files" id="receptorligand-pdbqt-input-files" style="color: inherit; text-decoration: none;">
 					<h3>Receptor/Ligand PDBQT Input Files</h3>
 				</a>
 				<p>As is the case with command-line Vina, Webina accepts input receptor and
 					ligand files in the PDBQT format. The latest version of the Webina app
-					interfaces with the PDBQTConvert app (included in the git repository) to
-					convert these files from other formats (e.g., PDB) to PDBQT. But some advanced
-				users may wish to provide their own PDBQT files. Such users include:</p>
+					optionally interfaces with the PDBQTConvert app (included in the git
+					repository) to convert these files from other formats (e.g., PDB) to PDBQT.
+					But some advanced users may wish to provide their own PDBQT files. Such users
+				include:</p>
 				<ul>
 					<li>Users who wish to have more fine-grained control over the input. For
 						example, users who wish to specify protonation states, ring-conformational
@@ -180,7 +150,7 @@
 my_receptor.pdbqt</code></li>
 				</ul>
 				<a href="#preparing-the-ligand-pdbqt-file" id="preparing-the-ligand-pdbqt-file" style="color: inherit; text-decoration: none;">
-					<h5>Preparing the Ligand PDBQT File</h5>
+					<h4>Preparing the Ligand PDBQT File</h4>
 				</a>
 				<p>We recommend the following steps for those who wish to provide their own
 				ligand PDBQT files:</p>
@@ -251,7 +221,7 @@ ligand.pdbqt</code></li>
 					<li>If users specify receptor/ligand input files that are not in the required
 						PDBQT format, the Webina web app will optionally attempt to convert them to
 						PDBQT using the PDBQTConvert app. Interactions between the Webina and
-					PDBQTConvert apps occur at &quot;arms length&quot; via an iframe.</li>
+					PDBQTConvert apps occur at &quot;arm&#39;s length&quot; via an iframe.</li>
 					<li>If users&#39; receptor files include non-protein residues that might interfere
 						with docking (e.g., a co-crystallized ligand), they can remove all
 					non-protein atoms.</li>
@@ -352,10 +322,22 @@ ligand.pdbqt</code></li>
 					<li>Download the <code>webina.zip</code> file</li>
 					<li>Uncompress the file: <code>unzip webina.zip</code></li>
 					<li>Change to the new <code>webina/</code> directory: <code>cd webina</code></li>
-					<li>Start a local server. Python provides one out of the box: <code>python -m
-SimpleHTTPServer 8000</code></li>
-					<li>Access the server from your web-browser: <code>http://localhost:8000/</code> or
-					perhaps <code>http://0.0.0.0:8000/</code></li>
+					<li>Start a local server.<ul>
+							<li>You can use <code>Node.js</code> and <code>npm</code>:<ul>
+									<li><code>npm install -g http-server</code></li>
+									<li><code>http-server</code></li>
+								</ul>
+							</li>
+							<li><a href="https://curiousprog.com/2018/10/08/serving-webassembly-files-with-a-development-web-server/">With some
+								coding</a>,
+								you can also use Python 2.7&#39;s built-in server:<ul>
+									<li><code>python -m SimpleHTTPServer 8000</code></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>Access the server from your web-browser (e.g., <code>http://localhost:8000/</code>,
+					<code>http://0.0.0.0:8000/</code>, etc.)</li>
 				</ol>
 				<p>Running Webina on other operating systems (e.g., Windows) should be similar.</p>
 				<a href="#compiling-the-webina-web-app" id="compiling-the-webina-web-app" style="color: inherit; text-decoration: none;">

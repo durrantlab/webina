@@ -59,12 +59,28 @@ let computedFunctions = {
 
 /** An object containing the vue-component methods functions. */
 let methodsFunctions = {
-    "beginConvert"(e) {
+    /**
+     * Begin to convert the file to PDBQT.
+     * @param  {*}      e                              The click event.
+     * @param  {number=1} currentPDBOptimizationLevel  To what extent the PDB
+     *                                                 file should be
+     *                                                 optimized (to keep size
+     *                                                 low for converting).
+     * @param  {string=""} successMsg                  The message to display
+     *                                                 to the user on success
+     *                                                 (if any).
+     * @returns void
+     */
+    "beginConvert"(e, currentPDBOptimizationLevel=1, successMsg=""): void {
         let frameWindow = document.getElementById("convert-frame")["contentWindow"];
         frameWindow["startSpinner"]();
         let content: string = this.$store.state["convertFile"];
         while (content.substr(content.length - 1, 1) === "\n") {
             content = content.substr(0, content.length - 1);
+        }
+
+        if (this["currentExt"].toUpperCase() === "PDB") {
+            successMsg += this.pdbOptimization(currentPDBOptimizationLevel);
         }
 
         if (this["currentType"]!=="ligand") {
@@ -103,9 +119,22 @@ let methodsFunctions = {
             // Update the filename to end in pdbqt.
             let newFilename = Utils.replaceExt(this.$store.state[this["currentType"] + "FileName"], "converted.pdbqt");
             this.$store.commit("updateFileName", { type: this["currentType"], filename: newFilename });
+
+            if (successMsg !== "") {
+                this["$bvModal"]["msgBoxOk"]("To convert your file, Webina had to make the following modifications: " + successMsg, {
+                    "title": "Warning: File Too Big!",
+                });
+            }
         }).catch((msg) => {
+            // The conversion failed. But if it's a PDB file, it might be
+            // worth trying to optimize it further.
+            if (currentPDBOptimizationLevel <= 3) {
+                this["beginConvert"](e, currentPDBOptimizationLevel + 1, successMsg);
+                return;
+            }
+
             this["$refs"]["convert-modal"].hide();
-            this["$bvModal"]["msgBoxOk"]("Could not convert your file. Are you sure it is a properly formatted " + this["currentExt"] + " file?", {
+            this["$bvModal"]["msgBoxOk"]("Could not convert your file. Are you sure it is a properly formatted " + this["currentExt"] + " file? If so, it may be too large to convert in the browser.", {
                 "title": "Error Converting File!",
             });
             this.$store.commit("setVar", {
@@ -119,7 +148,52 @@ let methodsFunctions = {
         e.preventDefault();
     },
 
-    "cancelPressed"() {
+
+    /**
+     * PDB files are very common, yet openbabel.js cannot convert them if they
+     * are too large. Here we make efforts to "optimize" the PDB file to
+     * maximize the changes that openbabel.js will succeed.
+     * @param  {number} level  The optimization level.
+     * @returns string  A message to show the user re. any modifications made
+     *                  to the PDB file.
+     */
+    pdbOptimization(level: number): string {
+        let pdbTxt = this.$store.state["convertFile"];
+
+        let msg = "";
+
+        switch (level) {
+            case 1:
+                // Always run this optimization. Just removes lines that don't
+                // start with ATOM and HETATM.
+                pdbTxt = pdbTxt.split("\n").filter(l => l.slice(0, 5) === "ATOM " || l.slice(0, 7) === "HETATM ").join("\n");
+                break;
+            case 2:
+                // Try removing everything but protein atoms.
+                pdbTxt = Utils.keepOnlyProteinAtoms(pdbTxt);
+                msg += " (1) Discard non-protein atoms."
+                break;
+            case 3:
+                // Keep only the first chain.
+                let chain = pdbTxt.slice(21,22);
+                pdbTxt = pdbTxt.split("\n").filter(l => l.slice(21,22) === chain).join("\n");
+                msg += " (1) Keep only the first chain (chain " + chain + ").";
+                break;
+        }
+
+        this.$store.commit("setVar", {
+            name: "convertFile",
+            val: pdbTxt
+        });
+
+        return msg;
+    },
+
+    /**
+     * The cancel button is pressed.
+     * @returns void
+     */
+    "cancelPressed"(): void {
         // Not sure the below is really necessary, but let's just make
         // sure.
         this.$store.commit("setVar", {
@@ -134,7 +208,12 @@ let methodsFunctions = {
 
         this.$store.commit("updateFileName", { type: this["currentType"], filename: "" });
     },
-    "reloadIFrame"() {
+
+    /**
+     * Reload the iframe containing the PDBConvert app.
+     * @returns void
+     */
+    "reloadIFrame"(): void {
         document.getElementById("convert-frame")["src"] = "./pdbqt_convert/index.html?startBlank";
     }
 }

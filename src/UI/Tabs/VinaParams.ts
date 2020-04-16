@@ -186,25 +186,7 @@ let methodsFunctions = {
      * @returns void
      */
     "onShowKeepProteinOnlyClick"(e: any): void {
-        let proteinResidues = [
-            "ALA", "ARG", "ASH", "ASN", "ASP", "ASX", "CYM", "CYS", "CYX",
-            "GLH", "GLN", "GLU", "GLX", "GLY", "HID", "HIE", "HIP", "HIS",
-            "HSD", "HSE", "HSP", "ILE", "LEU", "LYN", "LYS", "MET", "MSE",
-            "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL"
-        ];
-        let lines: string[] = this.$store.state["receptorContents"].split("\n");
-        let l = lines.length;
-        let linesToKeep = "";
-        for (let i = 0; i < l; i++) {
-            if ((lines[i].substr(0, 5) !== "ATOM ") && (lines[i].substr(0, 7) !== "HETATM ")) {
-                // Not an atom line.
-                continue;
-            }
-
-            if (proteinResidues.indexOf(lines[i].substr(17,3)) !== -1) {
-                linesToKeep += lines[i] + "\n";
-            }
-        }
+        let linesToKeep = Utils.keepOnlyProteinAtoms(this.$store.state["receptorContents"]);
 
         this.$store.commit("setVar", {
             name: "receptorContents",

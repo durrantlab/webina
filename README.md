@@ -128,9 +128,8 @@ Parameters" tab. This tab includes several subsections that are useful for
 setting up a Webina run.
 
 __Input PDBQT Files.__ The "Input (PDBQT) Files" subsection allows the user to
-select their receptor and ligand files. As is the case with command-line Vina,
-these files must be in the PDBQT format. The user can also optionally specify
-a known-pose PDB or PDBQT ligand file. This file includes the ligand in its
+select their receptor and ligand files. The user can also optionally specify a
+known-pose PDB or PDBQT ligand file. This file includes the ligand in its
 experimentally determined, correct bound pose (e.g., per X-ray crystallography
 or NMR). The known-pose file plays no role in the docking calculation; rather,
 it serves as a positive-control reference for evaluating Webina-predicted
@@ -186,9 +185,9 @@ will wish to adjust these parameters to avoid impacting the performance of
 other programs and browser tabs.
 
 __Advanced Parameters.__ The "Advanced Parameters" subsection allows users to
-specify any of the many additional parameters that are also available via
-command-line Vina. In our experience, it is rarely necessary to adjust these
-parameters, so they are hidden by default.
+specify many additional parameters that are also available via command-line
+Vina. In our experience, it is rarely necessary to adjust these parameters, so
+they are hidden by default.
 
 __Run Vina from Command Line.__ The "Run Vina from Command Line" subsection
 aims to help Vina users who wish to use the Webina web app to setup their
@@ -235,8 +234,8 @@ Webina output files. An associated "Download" button allows users to easily
 save those files.
 
 __Run Vina from Command Line.__ Similar to the "Input Parameters" tab, the
-"Output" Tab also includes a "Run Vina from Command Line" Subsection. This
-section makes it easy for users to reproduce Webina's results using
+"Output" tab also includes a "Run Vina from Command Line" subsection. This
+subsection makes it easy for users to reproduce Webina's results using
 stand-alone Vina. It also reminds users what parameters they selected to
 generate the displayed Webina output.
 
@@ -257,10 +256,16 @@ these instructions:
 1. Download the `webina.zip` file
 2. Uncompress the file: `unzip webina.zip`
 3. Change to the new `webina/` directory: `cd webina`
-4. Start a local server. Python provides one out of the box: `python -m
-   SimpleHTTPServer 8000`
-5. Access the server from your web-browser: `http://localhost:8000/` or
-   perhaps `http://0.0.0.0:8000/`
+4. Start a local server.
+   * You can use `Node.js` and `npm`:
+     * `npm install -g http-server`
+     * `http-server`
+   * [With some
+     coding](https://curiousprog.com/2018/10/08/serving-webassembly-files-with-a-development-web-server/),
+     you can also use Python 2.7's built-in server:
+     * `python -m SimpleHTTPServer 8000`
+5. Access the server from your web-browser (e.g., `http://localhost:8000/`,
+   `http://0.0.0.0:8000/`, etc.)
 
 Running Webina on other operating systems (e.g., Windows) should be similar.
 
