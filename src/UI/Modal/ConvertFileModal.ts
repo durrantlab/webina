@@ -182,7 +182,7 @@ export function setup(): void {
                     </span>
                 </p>
 
-                <p>Or click "Convert" below to convert with PDBQTConvert, which should be good enough for most purposes.</p>
+                <p>Or click "Convert" below to convert with the PDBQTConvert app, which should be good enough for most purposes.</p>
 
                 <b-form-checkbox
                     id="babel-add-hydrogens"

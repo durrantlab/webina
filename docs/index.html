@@ -110,8 +110,39 @@
 				<a href="#description-of-use" id="description-of-use" style="color: inherit; text-decoration: none;">
 					<h2>Description of Use</h2>
 				</a>
-				<a href="#preparing-receptorligand-pdbqt-input-files" id="preparing-receptorligand-pdbqt-input-files" style="color: inherit; text-decoration: none;">
-					<h3>Preparing Receptor/Ligand PDBQT Input Files</h3>
+				<a href="#pdbqtconvert-web-app" id="pdbqtconvert-web-app" style="color: inherit; text-decoration: none;">
+					<h3>PDBQTConvert Web App</h3>
+				</a>
+				<p>We created the PDBQTConvert web app to better accomodate novice users. Like
+					Vina, the Webina library accepts receptor/ligand input files only in the PDBQT
+					format, a PDB-like format that additionally includes atom types and partial
+					atomic charges. As described in the &quot;Webina and Vina Benchmarks&quot; section
+					below, a number of command-line and other programs are available for
+					converting receptor/ligand input files from popular formats (e.g., PDB, SDF,
+					etc.) to PDBQT. But PDBQTConvert provides an easier way to prepare these files
+					using a Bootstrap4-powered GUI in the browser. We distribute the PDBQTConvert
+					app alongside Webina, but as an entirely separate program. Unlike the Webina
+				library/app codebase, the PDBQTConvert app is GPLv2 licensed, not Apache-2.0.</p>
+				<p>PDBQTConvert uses the <a href="https://github.com/partridgejiang/cheminfo-to-web/tree/master/OpenBabel/OpenBabel-js">OpenBabel JS
+					library</a>
+					to convert receptor and ligand input files from many common formats (i.e.,
+					CAN, ENT, MCIF, MDL, MMCIF, MOL, MOL2, PDB, PQR, SD, SDF, SMI, SMILES, and
+					XYZ) to the Webina-compatible PDBQT format. The app can optionally include
+					branches and torsion trees, as required to indicate which ligand bonds should
+				be considered rotatable during Webina/Vina docking.</p>
+				<p>A second option instructs PDBQTConvert to add hydrogen atoms per a
+					user-specified pH. This feature is particularly useful because PDB receptor
+					structures derived via X-ray crystallography often lack the resolution
+					required to place hydrogen atoms, and many popular ligand formats (e.g.,
+					SMILES strings) do not enumerate explicit hydrogen atoms. And yet Webina/Vina
+					docking does require that receptor/ligand PDBQT files include polar hydrogen
+				atoms.</p>
+				<p>A third option instructs PDBQTConvert to generate 3D coordinates for the input
+					molecule. Many popular ligand formats (e.g., SMILES strings, flat SDF files,
+					etc.) do not include 3D atomic coordinates, but Webina/Vina docking requires
+				fully 3D models.</p>
+				<a href="#receptorligand-pdbqt-input-files" id="receptorligand-pdbqt-input-files" style="color: inherit; text-decoration: none;">
+					<h3>Receptor/Ligand PDBQT Input Files</h3>
 				</a>
 				<p>As is the case with command-line Vina, Webina accepts input receptor and
 					ligand files in the PDBQT format. The latest version of the Webina app
@@ -201,17 +232,33 @@ ligand.pdbqt</code></li>
 					results. On first visiting the Webina web app, the user encounters the &quot;Input
 					Parameters&quot; tab. This tab includes several subsections that are useful for
 				setting up a Webina run.</p>
-				<p><strong>Input PDBQT Files.</strong> The &quot;Input PDBQT Files&quot; subsection allows the user to
+				<p><strong>Input PDBQT Files.</strong> The &quot;Input (PDBQT) Files&quot; subsection allows the user to
 					select their receptor and ligand files. As is the case with command-line Vina,
 					these files must be in the PDBQT format. The user can also optionally specify
 					a known-pose PDB or PDBQT ligand file. This file includes the ligand in its
 					experimentally determined, correct bound pose (e.g., per X-ray crystallography
 					or NMR). The known-pose file plays no role in the docking calculation; rather,
 					it serves as a positive-control reference for evaluating Webina-predicted
-				ligand poses.</p>
-				<p>Some users may wish to test Webina without having to provide their own input
-					files. The optional &quot;Use Example Files&quot; button automatically loads in example
-				receptor, ligand, and known-pose files.</p>
+					ligand poses. In our experience, it is often helpful to first benchmark Webina
+					(or Vina) against a known ligand before using the program to evaluate
+				compounds with unknown poses and binding affinities.</p>
+				<p>The &quot;Input (PDBQT) Files&quot; subsection also includes several options to simplify
+				the process of preparing/testing protein/ligand input files.</p>
+				<ul>
+					<li>If users wish only to test Webina without having to provide their own files,
+						they can click the &quot;Use Example Files&quot; button to automatically load example
+					receptor, ligand, and known-pose files.</li>
+					<li>If users specify receptor/ligand input files that are not in the required
+						PDBQT format, the Webina web app will optionally attempt to convert them to
+						PDBQT using the PDBQTConvert app. Interactions between the Webina and
+					PDBQTConvert apps occur at &quot;arms length&quot; via an iframe.</li>
+					<li>If users&#39; receptor files include non-protein residues that might interfere
+						with docking (e.g., a co-crystallized ligand), they can remove all
+					non-protein atoms.</li>
+					<li>If users do not have a ligand file, they can use a web-based 2D molecular
+						editor to draw their ligand by hand. PDBQTConvert then converts that 2D
+					ligand representation to a 3D PDBQT file for docking.</li>
+				</ul>
 				<p><strong>Docking Box.</strong> The &quot;Docking Box&quot; subsection allows users to specify the
 					region of the receptor where Webina should attempt to pose the ligand. This
 					box-shaped volume is typically centered on a known protein pocket or cavity
@@ -247,7 +294,9 @@ ligand.pdbqt</code></li>
 					docking boxes and user parameters. A text field provides a mock example of how
 					to use command-line Vina with the specified parameters. Users can copy this
 					example, modify it as needed, and paste it into their command-line terminals
-				to run the desired calculation with the standard Vina executable.</p>
+					to run the desired calculation with the standard Vina executable. This
+					subsection also includes links that allow the user to download the
+				receptor/ligand PDBQT files for command-line use.</p>
 				<p><strong>Starting the Webina Calculation.</strong> Once users click the &quot;Start Webina&quot;
 					button, the Webina app will switch to the &quot;Running Webina&quot; tab while Webina
 					executes. When the calculation is complete, the Webina web app will switch to
