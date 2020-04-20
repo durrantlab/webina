@@ -1,8 +1,8 @@
 Changes
 =======
 
-WIP
----
+1.0.1
+-----
 
 * Updated the "Run Vina from the Command Line" widget.
   * Fixed a minor bug that sometimes caused malformed example command lines.
