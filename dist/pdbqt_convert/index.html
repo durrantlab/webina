@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <!--
+            PDBQTConvert: A program for converting many file formats to PDBQT.
+            Copyright (C) 2020 Jacob Durrant
+
+            This program is free software; you can redistribute it and/or
+            modify it under the terms of the GNU General Public License as
+            published by the Free Software Foundation; either version 2 of the
+            License, or (at your option) any later version.
+
+            This program is distributed in the hope that it will be useful,
+            but WITHOUT ANY WARRANTY; without even the implied warranty of
+            MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+            General Public License for more details.
+
+            You should have received a copy of the GNU General Public License
+            along with this program; if not, write to the Free Software
+            Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+            02110-1301 USA.
+        -->
+
+        <meta charset="utf-8" />
+
+        <title>PDBQT Convert</title>
+        <meta name="description" content="PDBQT Convert" />
+        <meta name="author" content="Jacob D. Durrant" />
+
+        <link rel="stylesheet" href="bootstrap.min.css" />
+        <link rel="stylesheet" href="bootstrap-theme.min.css" />
+    </head>
+
+    <body>
+        <script src="openbabel.js"></script>
+        <script src="PDBQTConvert.js"></script>
+
+        <div
+            class="container-fluid"
+            style="padding-top: 15px; padding-bottom: 15px;"
+        >
+            <div class="row">
+                <div id="first-part" style="display: none;" class="col-md-12">
+                    <form role="form">
+                        <div class="form-group">
+                            <!-- <label for="input-contents"
+                                >Input-File Contents</label
+                            > -->
+                            <textarea
+                                class="form-control"
+                                rows="5"
+                                id="input-contents"
+                                placeholder="Paste contents of input file here..."
+                                style="font-family: monospace;"
+                            ></textarea>
+                            <small class="form-text text-muted"
+                                >Paste your input-file contents above.
+                                Acceptable formats include
+                                <span id="format-list"></span>.</small
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <!-- <label for="formats">Input-File Format</label> -->
+                            <select class="form-control" id="formats"></select>
+                            <small class="form-text text-muted">
+                                What is the format of the input file you pasted
+                                above?
+                            </small>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="include-branches"
+                                    id="include-branches"
+                                    checked="checked"
+                                />
+                                Include branches and torsion trees in output
+                                file
+                                <small class="form-text text-muted">
+                                    Small molecules should include branches and
+                                    torsions. Proteins should not.
+                                </small>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="add-hydrogens"
+                                    id="add-hydrogens"
+                                />
+                                Add hydrogen atoms at pH
+                                <input
+                                    type="text"
+                                    class="form-control form-control-sm"
+                                    id="ph-val"
+                                    name="ph-val"
+                                    value="7.4"
+                                    style="
+                                        width: 50px;
+                                        text-align: center;
+                                        margin-left: 3px;
+                                        display: inline-block;
+                                    "
+                                    placeholder="7.4"
+                                />
+                                <small class="form-text text-muted">
+                                    Use this if your molecule includes no
+                                    pre-existing hydrogen atoms.
+                                </small>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="generate-3d"
+                                    id="generate-3d"
+                                />
+                                Generate 3D coordinates
+                                <small class="form-text text-muted">
+                                    Use this if your molecule includes no
+                                    pre-existing 3D coordinates
+                                </small>
+                            </label>
+                        </div>
+                        <button
+                            type="submit"
+                            id="convert-btn"
+                            class="btn btn-primary"
+                        >
+                            Convert File
+                        </button>
+                    </form>
+                </div>
+
+                <div id="second-part" style="display: none;" class="col-md-12">
+                    <div class="d-flex justify-content-center">
+                        <div
+                            style="width: 3rem; height: 3rem;"
+                            class="spinner-border"
+                            role="status"
+                        >
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="third-part" style="display: none;" class="col-md-12">
+                    <form role="form">
+                        <div class="form-group">
+                            <!-- <label for="output-contents"
+                                >Output-File Contents</label
+                            > -->
+                            <textarea
+                                class="form-control"
+                                rows="5"
+                                id="output-contents"
+                                placeholder="Output-file contents here..."
+                                style="font-family: monospace;"
+                            ></textarea>
+                            <small class="form-text text-muted">
+                                The contents of your PDBQT-formatted output
+                                file.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Get a list of formats.
+            var formats = [
+                "can",
+                "ent",
+                "mcif",
+                "mdl",
+                "mmcif",
+                "mol",
+                "mol2",
+                "pdb",
+                "pqr",
+                "sd",
+                "sdf",
+                "smi",
+                "smiles",
+                "xyz",
+            ];
+
+            // Populate the formats option list.
+            var html = "";
+            for (var i = 0; i < formats.length; i++) {
+                html +=
+                    '<option value="' +
+                    formats[i] +
+                    '">' +
+                    formats[i] +
+                    "</option>";
+            }
+            document.getElementById("formats").innerHTML = html;
+            document.getElementById("format-list").innerHTML = formats.join(
+                ", "
+            );
+
+            // The function that starts the conversion. Returns a promise.
+            function doConversion(params) {
+                return PDBQTConvert.convert(
+                    params.content,
+                    params.frmt,
+                    params.includeBranches,
+                    params.addHydrogens,
+                    params.gen3D,
+                    params.pH
+                );
+            }
+
+            // The function that shows the spinner.
+            function startSpinner() {
+                document.getElementById("first-part").style.display = "none";
+                document.getElementById("second-part").style.display = "block";
+            }
+
+            // Setup the form button.
+            document
+                .getElementById("convert-btn")
+                .addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Show the spinner.
+                    startSpinner();
+
+                    // Do the conversion.
+                    var content = document.getElementById("input-contents")
+                        .value;
+                    var frmt = document.getElementById("formats").value;
+                    var includeBranches = document.getElementById(
+                        "include-branches"
+                    ).checked;
+                    var addHydrogens = document.getElementById("add-hydrogens")
+                        .checked;
+                    var gen3D = document.getElementById("generate-3d").checked;
+                    var pH = parseFloat(document.getElementById("ph-val").value);
+
+                    doConversion({
+                        content,
+                        frmt,
+                        includeBranches,
+                        addHydrogens,
+                        gen3D,
+                        pH
+                    })
+                        .then((out) => {
+                            // Update the text area with the output-file contents.
+                            document.getElementById(
+                                "output-contents"
+                            ).innerHTML = out;
+
+                            // Show the output file.
+                            document.getElementById(
+                                "second-part"
+                            ).style.display = "none";
+                            document.getElementById(
+                                "third-part"
+                            ).style.display = "block";
+                        })
+                        .catch((msg) => {
+                            console.log(msg);
+                        });
+                });
+
+            // Show the first panel if appropriate.
+            if (window.location.href.indexOf("?startBlank") == -1) {
+                // So not using post messages.
+                document.getElementById("first-part").style.display = "block";
+            }
+        </script>
+
+        <script>
+            // console.log();
+        </script>
+    </body>
+</html>

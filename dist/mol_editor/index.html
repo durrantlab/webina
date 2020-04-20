@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--
+            Adapted from the demo file at
+            https://github.com/partridgejiang/Kekule.js/blob/master/demos/items/chemEditor/chemEditor.html
+        -->
+        <!--
+            Kekule.js is MIT licensed.
+        -->
+        <meta charset="UTF-8" />
+        <title>Webina Molecular Editor</title>
+        <script src="libs/raphael-min.2.0.1.js"></script>
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
+        />
+
+        <script src="libs/kekule/kekule.js?modules=chemWidget,algorithm&locals=en,zh"></script>
+        <link rel="stylesheet" type="text/css" href="libs/kekule/kekule.css" />
+
+        <script>
+            var chemEditor;
+            var chemComposer;
+            function init() {
+                chemComposer = Kekule.Widget.getWidgetById("chemComposer");
+                chemComposer
+                    .setEnableDimensionTransform(true)
+                    .setAutoSetMinDimension(true)
+                    .setAutoResizeConstraints({ width: 1, height: 1 })
+                    .autoResizeToClient(); // force a resize to window client
+            }
+            Kekule.X.domReady(init);
+
+            function getSmiles() {
+                return Kekule.IO.saveFormatData(chemComposer.getChemObj(), 'smi');
+            }
+        </script>
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                touch-action: none;
+            }
+            #chemComposer {
+                margin: 0;
+            }
+            button.K-Chem-SaveFile,
+            button.K-Action-Open-Configurator,
+            button.K-Chem-Toggle-Inspector,
+            button.K-Chem-ArrowLineIaController,
+            button.K-Chem-TextImageIaController,
+            span.K-Chem-Composer-Zoom-Toolbar {
+                display: none !important; /* You don't need save option */
+            }
+            .K-Chem-Composer .K-Chem-Editor {
+                overflow-x: hidden !important;
+                overflow-y: hidden !important;
+            }
+            div.K-Chem-Composer-Editor-Stage {
+                width: 99%;
+                height: 99%;
+            }
+        </style>
+    </head>
+    <body>
+        <div
+            id="chemComposer"
+            style="width: 800px; height: 600px;"
+            data-widget="Kekule.Editor.Composer"
+        ></div>
+    </body>
+</html>
