@@ -66,12 +66,12 @@ let methodsFunctions = {
      *                                                 file should be
      *                                                 optimized (to keep size
      *                                                 low for converting).
-     * @param  {string=""} successMsg                  The message to display
+     * @param  {string[]} successMsgs                  The messages to display
      *                                                 to the user on success
      *                                                 (if any).
      * @returns void
      */
-    "beginConvert"(e, currentPDBOptimizationLevel=1, successMsg=""): void {
+    "beginConvert"(e, currentPDBOptimizationLevel=1, successMsgs=[]): void {
         let frameWindow = document.getElementById("convert-frame")["contentWindow"];
         frameWindow["startSpinner"]();
         let content: string = this.$store.state["convertFile"];
@@ -80,7 +80,10 @@ let methodsFunctions = {
         }
 
         if (this["currentExt"].toUpperCase() === "PDB") {
-            successMsg += this.pdbOptimization(currentPDBOptimizationLevel);
+            let msg = this.pdbOptimization(currentPDBOptimizationLevel);
+            if (msg !== "") {
+                successMsgs.push(msg);
+            }
         }
 
         if (this["currentType"]!=="ligand") {
@@ -121,16 +124,17 @@ let methodsFunctions = {
             let newFilename = Utils.replaceExt(this.$store.state[this["currentType"] + "FileName"], "converted.pdbqt");
             this.$store.commit("updateFileName", { type: this["currentType"], filename: newFilename });
 
-            if (successMsg !== "") {
-                this["$bvModal"]["msgBoxOk"]("To convert your file to PDBQT, Webina had to make the following modifications: " + successMsg, {
+            if (successMsgs.length !== 0) {
+                let overallMsg = successMsgs.map((m, i) => { return "(" + (i + 1).toString() + ") " + m; }).join(" ");
+                this["$bvModal"]["msgBoxOk"]("To convert your file to PDBQT, Webina had to make the following modifications: " + overallMsg, {
                     "title": "Warning: File Too Big!",
                 });
             }
         }).catch((msg) => {
             // The conversion failed. But if it's a PDB file, it might be
             // worth trying to optimize it further.
-            if (currentPDBOptimizationLevel <= 3) {
-                this["beginConvert"](e, currentPDBOptimizationLevel + 1, successMsg);
+            if (currentPDBOptimizationLevel <= 4) {  // one less than max number in pdbOptimization.
+                this["beginConvert"](e, currentPDBOptimizationLevel + 1, successMsgs);
                 return;
             }
 
@@ -166,21 +170,41 @@ let methodsFunctions = {
         switch (level) {
             case 1:
                 // Always run this optimization. Just removes lines that don't
-                // start with ATOM and HETATM.
+                // start with ATOM and HETATM. Also keeps only the first frame
+                // if it's a multi-frame PDB.
+
+                if (pdbTxt.indexOf("\nEND") !== -1) {
+                    // Perhaps a multi-frame PDB.
+                    pdbTxt = pdbTxt.split("\nEND")[0];
+                    msg = "Keep only the first frame."
+                }
+
                 pdbTxt = pdbTxt.split("\n").filter(l => l.slice(0, 5) === "ATOM " || l.slice(0, 7) === "HETATM ").join("\n");
                 break;
             case 2:
                 // Try removing everything but protein atoms.
                 pdbTxt = Utils.keepOnlyProteinAtoms(pdbTxt);
-                msg += " (1) Discard non-protein atoms."
+                msg = "Discard non-protein atoms."
                 break;
             case 3:
                 // Keep only the first chain.
-                let chain = pdbTxt.slice(21,22);
+                let chain = pdbTxt.slice(21,22);  // first chain
                 pdbTxt = pdbTxt.split("\n").filter(l => l.slice(21,22) === chain).join("\n");
-                msg += " (2) Keep only the first chain (chain " + chain + ").";
+                msg = "Keep only the first chain (chain " + chain + ").";
+                break;
+            case 4:
+                // Remove existing hydrogen atoms.
+                pdbTxt = pdbTxt.split("\n").filter(l => l.substr(12,4).replace(/ /g, "").substr(0, 1) !== "H").join("\n");
+                msg = "Remove original hydrogen atoms.";
+                break;
+            case 5:
+                // Remove beta, occupancy, etc. columns.
+                pdbTxt = pdbTxt.split("\n").map(l => l.substr(0,54)).join("\n");
+                msg = "Remove original occupancy, beta, and element columns.";
                 break;
         }
+
+        // console.log("HHHHH>>> " + msg + " >>>> " + pdbTxt.length.toString());
 
         this.$store.commit("setVar", {
             name: "convertFile",

@@ -1,6 +1,19 @@
 Changes
 =======
 
+1.0.2
+-----
+
+* Renamed the `docs/` directory to `technical_docs/` so end users won't
+  confuse it with the user manual found in the `README.md` file.
+* Improved Webina's ability to convert large PDB files to PDBQT. PDBQTConvert
+  cannot convert large PDB files, so Webina reduces the input file size if it
+  encounters an error. In addition to the previous steps, it now does the
+  following:
+  * keeps only the first frame of multi-frame PDB files
+  * removes existing hydrogen atoms
+  * removes beta/occupancy/element columns
+
 1.0.1
 -----
 
