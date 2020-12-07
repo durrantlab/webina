@@ -18,7 +18,7 @@
 // details. Copyright 2020 Jacob D. Durrant.
 // There are a few variables and functions from vina.js that I want to easily
 // access from here.
-var VERSION = "1.0.0"; // Replaced by compile script.
+var VERSION = "1.0.2"; // Replaced by compile script.
 console.log("Webina Library " + VERSION);
 console.log("    Compiled from Vina 1.1.2 codebase:");
 console.log("    http://vina.scripps.edu/");
