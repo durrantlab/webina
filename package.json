@@ -1,6 +1,6 @@
 {
     "name": "webina",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "",
     "private": true,
     "scripts": {
@@ -20,7 +20,6 @@
         "css-loader": "^3.5.1",
         "duplicate-package-checker-webpack-plugin": "^3.0.0",
         "file-loader": "^4.3.0",
-        "google-closure-compiler": "^20190929.0.0",
         "html-webpack-plugin": "^3.2.0",
         "jquery": "^3.4.1",
         "mini-css-extract-plugin": "^0.8.2",
@@ -43,6 +42,7 @@
         "bootstrap": "^4.4.1",
         "bootstrap-vue": "^2.11.0",
         "file-saver": "^2.0.2",
+        "google-closure-compiler": "^20210601.0.0",
         "popper.js": "^1.16.1",
         "vue": "^2.6.11"
     }

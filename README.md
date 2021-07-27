@@ -1,4 +1,4 @@
-# Webina 1.0.2 #
+# Webina 1.0.3 #
 
 ## Introduction ##
 
@@ -257,15 +257,19 @@ these instructions:
 2. Uncompress the file: `unzip webina.zip`
 3. Change to the new `webina/` directory: `cd webina`
 4. Start a local server.
-   * You can use `Node.js` and `npm`:
-     * `npm install -g http-server`
-     * `http-server`
-   * [With some
-     coding](https://curiousprog.com/2018/10/08/serving-webassembly-files-with-a-development-web-server/),
-     you can also use Python 2.7's built-in server:
-     * `python -m SimpleHTTPServer 8000`
-5. Access the server from your web-browser (e.g., `http://localhost:8000/`,
-   `http://0.0.0.0:8000/`, etc.)
+   * Webina uses `SharedArrayBuffer` to leverage multiple processors, so your
+     server must send the [following
+     headers](https://developer.chrome.com/blog/enabling-shared-array-buffer/): 
+      * `Cross-Origin-Embedder-Policy: require-corp`
+      * `Cross-Origin-Opener-Policy: same-origin`
+   * To simplify testing on users' local machines, the Webina download includes
+     a Python3 web-server script.
+      * The script is named `simple-server.py.txt` (with a `.txt` extension) for
+        security purposes, so first rename it to `simple-server.py`
+        * `mv simple-server.py.txt simple-server.py`
+      * Then run from the command line:
+        * `python3 simple-server.py`
+5. Access the server from your web-browser.
 
 Running Webina on other operating systems (e.g., Windows) should be similar.
 

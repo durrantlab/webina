@@ -67,6 +67,7 @@ export function curPath(): string {
     }
     return url;
 }
+
 /**
  * Given a filename, replace its extension.
  * @param  {string} filename  The original filename.

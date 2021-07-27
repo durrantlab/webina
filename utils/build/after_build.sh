@@ -44,13 +44,16 @@ ls app.*js | awk '{print "cat t > " $1 ".tmp; cat " $1 " >> " $1 ".tmp; mv " $1 
 rm t
 cd -
 
+# Copy simple python server.
+cp ./utils/simple-server.py ./dist/simple-server.py.txt
+
 # Also create a ZIP file of the dist directory, for convenient distribution.
 mv dist webina
 zip -r webina.zip webina
 mv webina dist
 
 # Build the docs while you're at it.
-. utils/build/make_docs.sh
+# . utils/build/make_docs.sh
 
 # Let the user know that compilation is finished. Works only on macOS.
 say "Beep"

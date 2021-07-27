@@ -155,7 +155,10 @@ let methodsFunctions = {
                         // console.log(this["type"], "Adding " + typeStr, pdb.length);
                         this[typeStr + "PdbOfLoaded"] = pdb;
 
-                        this["viewer"].removeModel(this[typeStr + "Mol"]);
+                        let prevModel = this[typeStr + "Mol"];
+                        if (prevModel !== undefined) {
+                            this["viewer"].removeModel(prevModel);
+                        }
                         this["viewer"].resize();
 
                         this[typeStr + "Mol"] = this["viewer"].addModel(pdb, "pdb", {"keepH": true});
@@ -562,68 +565,68 @@ let methodsFunctions = {
 let watchFunctions = {
     /**
      * Watch when the receptorContents computed property.
-     * @param  {string} oldReceptorContents  The old value of the property.
      * @param  {string} newReceptorContents  The new value of the property.
+     * @param  {string} oldReceptorContents  The old value of the property.
      * @returns void
      */
-    "receptorContents": function (oldReceptorContents: string, newReceptorContents: string): void {
+    "receptorContents": function (newReceptorContents: string, oldReceptorContents: string): void {
         // The purpose of this is to react when new receptorContents
         // are added.
 
-        let duration: number = (newReceptorContents === "") ? 0 : 500;
+        let duration: number = (oldReceptorContents === "") ? 0 : 500;
         this.modelAdded(duration);
         // this.updateBox();  // So when invalid pdb loaded, can recover with valid pdb.
     },
 
     /**
      * Watch when the ligandContents computed property.
-     * @param  {string} oldLigandContents  The old value of the property.
      * @param  {string} newLigandContents  The new value of the property.
+     * @param  {string} oldLigandContents  The old value of the property.
      * @returns void
      */
-    "ligandContents": function (oldLigandContents: string, newLigandContents: string): void {
+    "ligandContents": function (newLigandContents: string, oldLigandContents: string): void {
         // The purpose of this is to react when new ligandContents are
         // added.
 
-        let duration: number = (newLigandContents === "") ? 0 : 500;
+        let duration: number = (oldLigandContents === "") ? 0 : 500;
         this.modelAdded(duration);
     },
 
     /**
      * Watch when the dockedContents computed property.
-     * @param  {string} oldDockedContents  The old value of the property.
      * @param  {string} newDockedContents  The new value of the property.
+     * @param  {string} oldDockedContents  The old value of the property.
      * @returns void
      */
-    "dockedContents": function (oldDockedContents: string, newDockedContents: string): void {
+    "dockedContents": function (newDockedContents: string, oldDockedContents: string): void {
         // The purpose of this is to react when new dockedContents are
         // added.
 
-        let duration: number = (newDockedContents === "") ? 0 : 500;
+        let duration: number = (oldDockedContents === "") ? 0 : 500;
         this.modelAdded(duration);
     },
 
     /**
      * Watch when the crystalContents computed property.
-     * @param  {string} oldCrystalContents  The old value of the property.
      * @param  {string} newCrystalContents  The new value of the property.
+     * @param  {string} oldCrystalContents  The old value of the property.
      * @returns void
      */
-    "crystalContents": function (oldCrystalContents: string, newCrystalContents: string): void {
+    "crystalContents": function (newCrystalContents: string, oldCrystalContents: string): void {
         // The purpose of this is to react when new dockedContents are
         // added.
 
-        let duration: number = (newCrystalContents === "") ? 0 : 500;
+        let duration: number = (oldCrystalContents === "") ? 0 : 500;
         this.modelAdded(duration);
     },
 
     /**
      * Watch when the vinaParams computed property.
-     * @param  {string} oldVinaParams  The old value of the property.
      * @param  {string} newVinaParams  The new value of the property.
+     * @param  {string} oldVinaParams  The old value of the property.
      * @returns void
      */
-    vinaParams(oldVinaParams: string, newVinaParams: string): void {
+    vinaParams(newVinaParams: string, oldVinaParams: string): void {
         // For updating the docking box...
         if (this["type"] !== "receptor") {
             return;

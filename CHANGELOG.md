@@ -1,6 +1,19 @@
 Changes
 =======
 
+1.0.3
+-----
+
+* Due to a recent browser update, web servers hosting Webina must now send the
+  `Cross-Origin-Embedder-Policy: require-corp` and `Cross-Origin-Opener-Policy:
+  same-origin` headers.
+  * Updated `README.md` to explain the need for these new headers.
+  * The webina.zip file now includes a simple Python3 server that provides the
+    required headers, to facilitate testing on users' local machines.
+* Starting with this version, we will no longer generate technical documentation
+  describing the Webina source code. Documentation describing basic usage,
+  compilation, etc. can be found in the `README.md` file.
+
 1.0.2
 -----
 

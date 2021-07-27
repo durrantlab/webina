@@ -6,10 +6,9 @@
 import * as UI from "./UI/UI";
 import * as VueSetup from "./Vue/Setup";
 import { VERSION } from "./Version";
+declare var ga;
 
 console.log("Webina Web App " + VERSION);
-
-declare var ga;
 
 VueSetup.setup();
 UI.setup();

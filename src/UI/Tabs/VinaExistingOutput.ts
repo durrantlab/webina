@@ -39,7 +39,7 @@ let methodsFunctions = {
                     val: this.$store.state["crystalContentsExample"]
                 });
 
-                resolve();
+                resolve(undefined);
             }, 100);
         })
 
