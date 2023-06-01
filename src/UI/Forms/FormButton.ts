@@ -3,7 +3,7 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 
-declare var Vue;
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -13,6 +13,7 @@ let computedFunctions = {
      */
     "classToUse"(): string {
         let classes = [this["cls"]];
+        // @ts-ignore
         if (this["small"] === true) {
             classes.push("download-button float-right ml-1");
         }
@@ -24,6 +25,7 @@ let computedFunctions = {
      * @returns string  The size.
      */
     "sizeToUse"(): string {
+        // @ts-ignore
         if (this["small"] === true) {
             return "sm";
         }

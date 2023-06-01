@@ -6,7 +6,7 @@
 import * as UI from "./UI/UI";
 import * as VueSetup from "./Vue/Setup";
 import { VERSION } from "./Version";
-declare var ga;
+declare let ga;
 
 console.log("Webina Web App " + VERSION);
 
@@ -27,10 +27,15 @@ if (window.location.href.indexOf("durrantlab") !== -1) {
             i[r] = i[r] || function() {
                 (i[r].q = i[r].q || []).push(arguments)
             }, i[r].l = 1 * new Date().getTime();
+            // @ts-ignore
             a = s.createElement(o);
+            // @ts-ignore
             m = s.getElementsByTagName(o)[0];
+            // @ts-ignore
             a.async = 1;
+            // @ts-ignore
             a.src = g;
+            // @ts-ignore
             m.parentNode.insertBefore(a, m)
         })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
         ga('create', 'UA-144382730-1', {

@@ -3,7 +3,7 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 
-declare var Vue;
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -11,11 +11,13 @@ let computedFunctions = {
      * set. */
     "modalShow": {
         get(): boolean {
-            return this.$store.state["modalShow"];
+            // @ts-ignore
+            return store.state["modalShow"];
         },
 
         set(val: boolean): void {
-            this.$store.commit("setVar", {
+            // @ts-ignore
+            store.commit("setVar", {
                 name: "modalShow",
                 val
             });
@@ -27,7 +29,8 @@ let computedFunctions = {
      * @returns string  The title.
      */
     "title"(): string {
-        return this.$store.state["modalTitle"];
+        // @ts-ignore
+        return store.state["modalTitle"];
     },
 
     /**
@@ -35,7 +38,8 @@ let computedFunctions = {
      * @returns string  The body.
      */
     "body"(): string {
-        return this.$store.state["modalBody"];
+        // @ts-ignore
+        return store.state["modalBody"];
     }
 }
 

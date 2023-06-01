@@ -2,8 +2,10 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../Vue/Store";
 
-declare var Vue;
+
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -12,10 +14,10 @@ let computedFunctions = {
      * @returns any[]  The array of items.
      */
     "items"(): any[] {
-        // let data = [[[1,48.4,0,0],"HETATM    1  C"],[[1,48.4,0,0],"HETATM    1  C"],[[1,48.4,0,0],"HETATM    1  C"]];  //this.$store.state["pdbOutputFrames"];
-        let data = this.$store.state["pdbOutputFrames"];
+        // let data = [[[1,48.4,0,0],"HETATM    1  C"],[[1,48.4,0,0],"HETATM    1  C"],[[1,48.4,0,0],"HETATM    1  C"]];  //store.state["pdbOutputFrames"];
+        let data = store.state["pdbOutputFrames"];
         const dataLen = data.length;
-        let items = [];
+        let items: {[key:string]: any}[] = [];
         let errorDetected = false;
         for (let i = 0; i < dataLen; i++) {
             const dataItem = data[i][0];  // The info about RMSD and such.
@@ -38,7 +40,7 @@ let computedFunctions = {
             }
         }
         if (errorDetected === true) {
-            this.$store.commit("openModal", {
+            store.commit("openModal", {
                 title: "Output File Invalid!",
                 body: "<p>The output PDBQT file does not appear to be properly formatted.</p>"
             });
@@ -77,8 +79,8 @@ let methodsFunctions = {
      * @returns void
      */
     "rowClicked"(data: any, idx: number): void {
-        let ligPDBTxt = this.$store.state["pdbOutputFrames"][idx][1];
-        this.$store.commit("setVar", {
+        let ligPDBTxt = store.state["pdbOutputFrames"][idx][1];
+        store.commit("setVar", {
             name: "dockedContents",
             val: ligPDBTxt
         });

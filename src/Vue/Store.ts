@@ -15,7 +15,8 @@ import ExampleLigandPDBQT from "../example/ATP.pdbqt";
 // @ts-ignore
 import ExampleOutputPDBQT from "../example/webina_out.pdbqt";
 
-declare var Vuex;
+declare let Vuex: any;
+declare let jQuery: any;
 
 interface IVueXStoreSetVar {
     name: string;
@@ -182,16 +183,15 @@ export const store = new Vuex.Store({
             let match;
             let i = 1;
             while (match = re.exec(outPdbqtFileTxt)) {
-                data.push([
-                    i, match[1], match[2], match[3]
-                ].map(d => +d));
+            // @ts-ignore
+                data.push([i, match[1], match[2], match[3]].map(d => +d));
                 i++;
             }
 
             // Get pdb frames from output pdbqt file.
             let framesPDBQTs = outPdbqtFileTxt.split("ENDMDL");
             let framePDBs = framesPDBQTs
-                            .map(t => ThreeDMol.pdbqtToPDB(t, this.$store))
+                            .map(t => ThreeDMol.pdbqtToPDB(t, (<any>this).$store))
                             .filter(t => t !== "")
                             .map((t, i) => { return [data[i], t]; });
             state["pdbOutputFrames"] = framePDBs;
@@ -253,4 +253,4 @@ export const store = new Vuex.Store({
 });
 
 // Good for debugging.
-window["store"] = store;
+(<any>window)["store"] = store;

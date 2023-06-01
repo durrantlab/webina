@@ -2,9 +2,11 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../../Vue/Store";
 
-declare var Vue;
-declare var FileSaver;
+
+declare let Vue: any;
+declare let FileSaver: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -13,7 +15,7 @@ let computedFunctions = {
      * @returns string  The standard output.
      */
     "stdOut"(): string {
-        return this.$store.state["stdOut"];
+        return store.state["stdOut"];
     },
 
     /**
@@ -21,7 +23,7 @@ let computedFunctions = {
      * @returns string  The output file.
      */
     "outputContents"(): string {
-        return this.$store.state["outputContents"];
+        return store.state["outputContents"];
     },
 
     /**
@@ -29,7 +31,7 @@ let computedFunctions = {
      * @returns string  The time.
      */
     "time"(): string {
-        return this.$store.state["time"].toString();
+        return store.state["time"].toString();
     }
 }
 
@@ -40,7 +42,7 @@ let methodsFunctions = {
      * @returns void
      */
     "stdOutDownload"(): void {
-        var blob = new Blob([this["stdOut"]], {type: "text/plain;charset=utf-8"});
+        const blob = new Blob([this["stdOut"]], {type: "text/plain;charset=utf-8"});
         FileSaver.saveAs(blob, "stdout.txt");
     },
 
@@ -49,7 +51,7 @@ let methodsFunctions = {
      * @returns void
      */
     "vinaOutputContentsDownload"(): void {
-        var blob = new Blob([this["outputContents"]], {type: "text/plain;charset=utf-8"});
+        const blob = new Blob([this["outputContents"]], {type: "text/plain;charset=utf-8"});
         FileSaver.saveAs(blob, "webina_out.pdbqt");
     }
 }

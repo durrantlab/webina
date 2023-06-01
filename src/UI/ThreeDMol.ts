@@ -2,10 +2,13 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../Vue/Store";
 
-declare var $3Dmol;
 
-declare var Vue;
+declare let $3Dmol;
+
+declare let Vue: any;
+declare let jQuery: any;
 
 let bigMolAlreadyModalDisplayed = false;
 
@@ -16,7 +19,7 @@ let computedFunctions = {
      * @returns string  The value.
      */
     "receptorContents"(): string {
-        return this.$store.state["receptorContents"];
+        return store.state["receptorContents"];
     },
 
     /**
@@ -24,7 +27,7 @@ let computedFunctions = {
      * @returns string  The value.
      */
     "ligandContents"(): string {
-        return this.$store.state["ligandContents"];
+        return store.state["ligandContents"];
     },
 
     /**
@@ -32,7 +35,7 @@ let computedFunctions = {
      * @returns string  The value.
      */
     "dockedContents"(): string {
-        return this.$store.state["dockedContents"];
+        return store.state["dockedContents"];
     },
 
     /**
@@ -40,7 +43,7 @@ let computedFunctions = {
      * @returns string  The value.
      */
     "crystalContents"(): string {
-        return this.$store.state["crystalContents"];
+        return store.state["crystalContents"];
     },
 
     /**
@@ -48,45 +51,45 @@ let computedFunctions = {
      * @returns string  The value.
      */
     vinaParams(): string {
-        return this.$store.state["vinaParams"];
+        return store.state["vinaParams"];
     },
 
     /**
      * Get the value of the surfBtnVariant variable.
-     * @returns string|boolean  The value.
+     * @returns string|boolean|undefined  The value.
      */
-    "surfBtnVariant"(): string|boolean {
+    "surfBtnVariant"(): string|boolean|undefined {
         return (this["renderProteinSurface"] === true) ? undefined : "default";
     },
 
     /**
      * Get the value of the allAtmBtnVariant variable.
-     * @returns string|boolean  The value.
+     * @returns string|boolean|undefined  The value.
      */
-    "allAtmBtnVariant"(): string|boolean {
+    "allAtmBtnVariant"(): string|boolean|undefined {
         return (this["renderProteinSticks"] === true) ? undefined : "default";
     },
 
     /**
      * Get the value of the crystalBtnVariant variable.
-     * @returns string|boolean  The value.
+     * @returns string|boolean|undefined  The value.
      */
-    "crystalBtnVariant"(): string|boolean {
+    "crystalBtnVariant"(): string|boolean|undefined {
         return (this["renderCrystal"] === true) ? undefined : "default";
     },
 
     /**
      * Determines whether the appropriate PDB content has been loaded.
-     * @returns boolean  True if it has been loaded, false otherwise.
+     * @returns boolean|undefined  True if it has been loaded, false otherwise.
      */
-    "appropriatePdbLoaded"(): boolean {
+    "appropriatePdbLoaded"(): boolean|undefined {
         switch (this["type"]) {
             case "receptor":
-                return this.appropriateReceptorPdbLoaded;
+                return this.appropriateReceptorPdbLoaded();
             case "ligand":
-                return this.appropriateLigandPdbLoaded;
+                return this.appropriateLigandPdbLoaded();
             case "docked":
-                return this.appropriateDockedPdbLoaded;
+                return this.appropriateDockedPdbLoaded();
         }
     },
 
@@ -96,7 +99,7 @@ let computedFunctions = {
      * @returns boolean  True if it has been loaded, false otherwise.
      */
     appropriateReceptorPdbLoaded(): boolean {
-        return this.$store.state["receptorContents"] !== "" || this.$store.state["crystalContents"] !== "";
+        return store.state["receptorContents"] !== "" || store.state["crystalContents"] !== "";
     },
 
     /**
@@ -105,7 +108,7 @@ let computedFunctions = {
      * @returns boolean  True if it has been loaded, false otherwise.
      */
     appropriateLigandPdbLoaded(): boolean {
-        return this.$store.state["ligandContents"] !== "";
+        return store.state["ligandContents"] !== "";
     },
 
     /**
@@ -114,7 +117,7 @@ let computedFunctions = {
      * @returns boolean  True if it has been loaded, false otherwise.
      */
     appropriateDockedPdbLoaded(): boolean {
-        return (this.$store.state["receptorContents"] !== "") && (this.$store.state["dockedContents"] !== "")
+        return (store.state["receptorContents"] !== "") && (store.state["dockedContents"] !== "")
     }
 }
 
@@ -149,7 +152,7 @@ let methodsFunctions = {
 
             let loadPDBTxt = (typeStr: string, callBack: any) => {
                 let origPDBContent = this[typeStr + "Contents"];
-                let pdb = pdbqtToPDB(origPDBContent, this.$store);
+                let pdb = pdbqtToPDB(origPDBContent, store);
                 if (pdb !== "") {
                     if (this[typeStr + "PdbOfLoaded"] !== pdb) {
                         // console.log(this["type"], "Adding " + typeStr, pdb.length);
@@ -174,7 +177,7 @@ let methodsFunctions = {
                     // this["viewer"].removeAllShapes();
                     // this["viewer"].resize();
 
-                    this.$store.commit("openModal", {
+                    store.commit("openModal", {
                         title: "Invalid Input File!",
                         body: "<p>The selected input file is not properly formatted. The molecular viewer has not been updated. Please select a properly formatted PDBQT or PDB file, as appropriate.</p>"
                     });
@@ -239,7 +242,7 @@ let methodsFunctions = {
      */
     receptorAdded(mol: any): void {
         // Get the center of the protein
-        var atoms = mol.selectedAtoms({});
+        let atoms = mol.selectedAtoms({});
         let len = atoms.length;
         let xTot = 0;
         let yTot = 0;
@@ -250,7 +253,7 @@ let methodsFunctions = {
         let maxX = -1e100;
         let maxY = -1e100;
         let maxZ = -1e100;
-        for (var i = 0; i < len; i++) {
+        for (let i = 0; i < len; i++) {
             let atom = atoms[i];
             let x = atom.x;
             let y = atom.y;
@@ -305,7 +308,7 @@ let methodsFunctions = {
      * @param  {any} mol  The 3dmol.js molecule object.
      * @returns void
      */
-    ligandAdded(mol, isCrystal = false): void {
+    ligandAdded(mol: any, isCrystal = false): void {
         let stickStyle = {};
         mol.setStyle({}, {
             "stick": { "radius": 0.4 }
@@ -324,25 +327,25 @@ let methodsFunctions = {
      * @returns void
      */
     makeAtomsClickable(mol: any): void {
-        mol.setClickable({}, true, (e) => {
-            this.$store.commit("setVinaParam", {
+        mol.setClickable({}, true, (e: any) => {
+            store.commit("setVinaParam", {
                 name: "center_x",
                 val: e["x"]
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "center_y",
                 val: e["y"]
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "center_z",
                 val: e["z"]
             });
         });
 
         // Also make labels.
-        var atoms = mol.selectedAtoms({});
+        let atoms = mol.selectedAtoms({});
         let len = atoms.length;
-        for (var i = 0; i < len; i++) {
+        for (let i = 0; i < len; i++) {
             let atom = atoms[i];
             this["viewer"].setHoverable({}, true, (atom: any) => {
                 let lbl = atom["resn"].trim() + atom["resi"].toString() + ":" + atom["atom"].trim();
@@ -365,12 +368,12 @@ let methodsFunctions = {
      * @returns void
      */
     setVinaParamIfUndefined(name: string, val: any): void {
-        if (this.$store.state["vinaParams"][name] === undefined) {
-            this.$store.commit("setVinaParam", {
+        if (store.state["vinaParams"][name] === undefined) {
+            store.commit("setVinaParam", {
                 name,
                 val
             });
-            this.$store.commit("setValidationParam", {
+            store.commit("setValidationParam", {
                 name,
                 val: true
             })
@@ -523,21 +526,22 @@ let methodsFunctions = {
     updateBox(): void {
         if (this["viewer"] === undefined) {
             // Try again in a bit. Not loaded yet...
+            // @ts-ignore
             setTimeout(this.updateBox, 1000);
             return;
         }
 
-        let centerX = this.$store.state["vinaParams"]["center_x"];
+        let centerX = store.state["vinaParams"]["center_x"];
         if (centerX === undefined) { return; }
-        let centerY = this.$store.state["vinaParams"]["center_y"];
+        let centerY = store.state["vinaParams"]["center_y"];
         if (centerY === undefined) { return; }
-        let centerZ = this.$store.state["vinaParams"]["center_z"];
+        let centerZ = store.state["vinaParams"]["center_z"];
         if (centerZ === undefined) { return; }
-        let sizeX = this.$store.state["vinaParams"]["size_x"];
+        let sizeX = store.state["vinaParams"]["size_x"];
         if (sizeX === undefined) { return; }
-        let sizeY = this.$store.state["vinaParams"]["size_y"];
+        let sizeY = store.state["vinaParams"]["size_y"];
         if (sizeY === undefined) { return; }
-        let sizeZ = this.$store.state["vinaParams"]["size_z"];
+        let sizeZ = store.state["vinaParams"]["size_z"];
         if (sizeZ === undefined) { return; }
 
         this["viewer"].removeAllShapes();
@@ -574,7 +578,7 @@ let watchFunctions = {
         // are added.
 
         let duration: number = (oldReceptorContents === "") ? 0 : 500;
-        this.modelAdded(duration);
+        (<any>this).modelAdded(duration);
         // this.updateBox();  // So when invalid pdb loaded, can recover with valid pdb.
     },
 
@@ -589,7 +593,7 @@ let watchFunctions = {
         // added.
 
         let duration: number = (oldLigandContents === "") ? 0 : 500;
-        this.modelAdded(duration);
+        (<any>this).modelAdded(duration);
     },
 
     /**
@@ -603,7 +607,7 @@ let watchFunctions = {
         // added.
 
         let duration: number = (oldDockedContents === "") ? 0 : 500;
-        this.modelAdded(duration);
+        (<any>this).modelAdded(duration);
     },
 
     /**
@@ -617,7 +621,7 @@ let watchFunctions = {
         // added.
 
         let duration: number = (oldCrystalContents === "") ? 0 : 500;
-        this.modelAdded(duration);
+        (<any>this).modelAdded(duration);
     },
 
     /**
@@ -632,6 +636,7 @@ let watchFunctions = {
             return;
         }
 
+        // @ts-ignore
         this.updateBox();
     }
 }
@@ -641,6 +646,7 @@ let watchFunctions = {
  * @returns void
  */
 function mountedFunction(): void {
+    // @ts-ignore
     this["renderProteinSurface"] = this["proteinSurface"];
 }
 
