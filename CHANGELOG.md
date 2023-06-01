@@ -1,6 +1,16 @@
 Changes
 =======
 
+1.0.4 (WIP)
+-----------
+
+Webpack 5
+Vina 1.2.3
+
+TODO: Increase version # everywhere to 1.0.4
+XXXXXXXX.XX needs replacing
+
+
 1.0.3
 -----
 

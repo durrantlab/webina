@@ -22,7 +22,8 @@ let computedFunctions = {
      * @returns string  The mock command line.
      */
     "commandlineStr"(): string {
-        if (this.vinaParamsValidate() === false) {
+        // @ts-ignore
+        if (this.vinaParamsValidate === false) {
             return "First fix parameter problems above..."
         } else {
             let params = store.state["vinaParams"];

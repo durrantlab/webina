@@ -7,13 +7,8 @@
 
 let VERSION = "XXXXXXXXXXXXX.X"; // Replaced by compile script.
 console.log("Webina Library " + VERSION);
-console.log("    Compiled from Vina 1.1.2 codebase:");
+console.log("    Compiled from Vina 1.2.3 codebase:");
 console.log("    http://vina.scripps.edu/");
-
-// var WEBINA_Module: any
-
-// @ts-ignore
-import * as WEBINA_Module from "./vina.js";
 
 interface IVinaParams {
     receptor?: string;
@@ -54,8 +49,6 @@ export function start(
         if (baseUrl.slice(baseUrl.length - 1) !== "/") {
             baseUrl += "/";
         }
-        debugger; // fix below
-        // this.WEBINA_BASE_URL = baseUrl;
         baseUrlMsg += "User specified baseUrl: " + baseUrl + "\n";
     } else {
         baseUrlMsg += "No baseUrl specified, so using ./\n\n";
@@ -67,10 +60,10 @@ export function start(
     baseUrlMsg += "\nExpecting files at the following locations:\n";
     for (let i = 0; i < 5; i++) {
         const fileName = [
-            "Webina.min.js",
-            "vina.html.mem",
-            "vina.min.js",
-            "vina.worker.min.js",
+            // "Webina.js",
+            // "vina.html.mem",
+            "vina.js",
+            "vina.worker.js",
             "vina.wasm",
         ][i];
         baseUrlMsg +=
@@ -84,357 +77,117 @@ export function start(
         console.warn(baseUrlMsg);
     }
 
+    if (vinaParams["receptor"] !== undefined) {
+        console.warn(
+            "Webina does not support Vina's --receptor parameter. Instead, pass the content of the receptor file as a string to the webina.start() function."
+        );
+    }
+
+    if (vinaParams["receptor"] !== undefined) {
+        console.warn(
+            "Webina does not support Vina's --ligand parameter. Instead, pass the content of the ligand file as a string to the webina.start() function."
+        );
+    }
+
+    if (onError === undefined) {
+        onError = () => {
+            console.log(
+                "Webina encountered an error! Does your browser support WebAssembly?"
+            );
+        };
+    }
+
+    let initializedObj: any = undefined;
+    let stdOut = "";
+    let stdErr = "";
+
     // @ts-ignore
-    import("../Webina/vina.js").then((vina: any) => {
-        debugger;
-    });
+    import(
+        "../Webina/vina.js"
+        /* webpackChunkName: "webina" */
+        /* webpackMode: "lazy" */
+    )
+        .then((mod: any) => {
+            const WEBINA_Module = mod.default;
+            const webinaMod = new WEBINA_Module({
+                logReadFiles: true,
+                noInitialRun: true,
+                locateFile: (path: string) => {
+                    // console.log(path);
+                    return `Webina/${path}`;
+                },
+                preRun: [
+                    function (This: any) {
+                        // Save the pdb file to the file system
+                        This.FS.writeFile("/receptor.pdbqt", receptorPDBQTTxt);
+                        This.FS.writeFile("/ligand.pdbqt", ligandPDBQTTxt);
 
+                        initializedObj = This;
+                    },
+                ],
+                print: (text: string) => {
+                    stdOut += text + "\n";
+                },
+                printErr: (text: string) => {
+                    stdErr += text + "\n";
+                },
+                onExit: (code: number) => {
+                    if (onDone !== undefined) {
+                        // Load contents of /ligand_out.pdbqt
+                        // @ts-ignore
+                        const outTxt = initializedObj.FS.readFile(
+                            "/ligand_out.pdbqt",
+                            { encoding: "utf8" }
+                        );
+                        onDone(outTxt, stdOut, stdErr);
+                        stdOut = "";
+                        stdErr = "";
+                    }
+                },
+                onError: onError,
+                catchError: (n) => {
+                    onError(n);
+                    // throw n;  // Don't throw the errr. You're catching it now.
+                },
+            });
+            return webinaMod;
+        })
+        .then((webinaMod: any) => {
+            return webinaMod.ready;
+        })
+        .then((webinaMod: any) => {
+            let cmdLineParams: any[] = [];
+            Object.keys(vinaParams).forEach((key) => {
+                const val = vinaParams[key];
+                if (val === false) {
+                    return;
+                } else if (val === true) {
+                    cmdLineParams.push(`--${key}`);
+                    return;
+                }
+                cmdLineParams.push(`--${key}`);
+                cmdLineParams.push(val.toString());
+            });
 
+            // cmdLineParams = ["--help"]
+            cmdLineParams.push(
+                ...[
+                    "--receptor",
+                    "/receptor.pdbqt",
+                    "--ligand",
+                    "/ligand.pdbqt",
+                    "--out",
+                    "/ligand_out.pdbqt",
+                ]
+            );
+
+            webinaMod.callMain(cmdLineParams);
+        });
 }
 
-//     if (onError === undefined) {
-//         onError = () => {
-//             console.log("Webina encountered an error! Does your browser support WebAssembly?");
-//         }
-//     }
-
-//     // Create a module object for WASM.
-//     const Module = {
-//         "preRun": [],
-//         "postRun": [],
-//         "stdOut": "",
-//         "stdErr": "",
-//         // "print": function() {
-//         //     return function(e) {
-//         //         1 < arguments.length && (
-//         //             e = Array.prototype.slice.call(arguments).join(" ")
-//         //         ),
-//         //         (<any>window)["WEBINA_Module"]["stdOut"] += e + "\n"
-//         //     }
-//         // }(),
-//         // "printErr": function(e) {
-//         //     // 1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" ")), console.error(e)
-//         //     1 < arguments.length && (
-//         //         e = Array.prototype.slice.call(arguments).join(" ")
-//         //     ),
-//         //     (<any>window)["WEBINA_Module"]["stdErr"] += e + "\n"
-//         // },
-//         "setStatus": (e) => {
-//             if (e === "") {
-//                 // This happens when it is done running.
-//                 if (onDone !== undefined) {
-//                     let outTxt: string = new TextDecoder("utf-8").decode(
-//                         (<any>window)["FS"]["readFile"]('ligand_out.pdbqt')
-//                     );
-//                     let stdOut: string = ""; // (<any>window)["WEBINA_Module"]["stdOut"];
-//                     let stdErr: string = ""; // (<any>window)["WEBINA_Module"]["stdErr"];
-//                     onDone(outTxt, stdOut, stdErr);
-//                 }
-//             }
-//         },
-//         "onError": onError,
-//         "catchError": (n) => {
-//             onError(n);
-//             // throw n;  // Don't throw the errr. You're catching it now.
-//         },
-//         "receptorPDBQTTxt": receptorPDBQTTxt,
-//         "ligandPDBQTTxt": ligandPDBQTTxt
-//     };
-
-//     if (vinaParams["receptor"] !== undefined) {
-//         console.warn("Webina does not support Vina's --receptor parameter. Instead, pass the content of the receptor file as a string to the webina.start() function.");
-//     }
-
-//     if (vinaParams["receptor"] !== undefined) {
-//         console.warn("Webina does not support Vina's --ligand parameter. Instead, pass the content of the ligand file as a string to the webina.start() function.");
-//     }
-
-//     // Receptor and ligand files are always the same.
-//     Module['arguments'] = [
-//         '--receptor', '/receptor.pdbqt',
-//         '--ligand', '/ligand.pdbqt',
-//     ];
-
-//     // For some reason, WebAssembly always uses one more processor
-//     // than specified. Compensate for that here. But sometimes it
-//     // doesn't, so commenting out... Confusing.
-//     // if ((vinaParams["cpu"] !== undefined) && (vinaParams["cpu"] > 1)) {
-//     //     vinaParams["cpu"] = vinaParams["cpu"] - 1;
-//     // }
-
-//     // Add in the remaining values. Note that there is no validation here.
-//     const paramNames = Object.keys(vinaParams);
-//     const paramNamesLen = paramNames.length;
-//     for (let i = 0; i < paramNamesLen; i++) {
-//         const key = paramNames[i];
-//         const val = vinaParams[key];
-//         Module['arguments'].push('--' + key);
-
-//         if (typeof(val) !== "boolean") {
-//             Module['arguments'].push(String(val));
-//         }
-//     }
-
-//     // const webinaMod = new WEBINA_Module(Module);
-
-//     // (<any>window)["WEBINA_Module"] = WEBINA_Module;
-
-//     // Initialize the memory
-//     // let memoryInitializer = this.WEBINA_BASE_URL + "vina.html.mem";
-//     // memoryInitializer = Module["locateFile"] ? Module["locateFile"](memoryInitializer, "") : memoryInitializer, Module["memoryInitializerRequestURL"] = memoryInitializer;
-
-//     debugger;
-
-//     // let meminitXHR = Module["memoryInitializerRequest"] = new XMLHttpRequest;
-
-//     // meminitXHR.onloadend = () => {
-//     //     if (meminitXHR.status === 404) {
-//     //         let msg = "Unable to access " + memoryInitializer +". See JavaScript console for warnings. The \"baseUrl\" variable passed to Webina is likely incorrect.";
-//     //         Module["catchError"]({"message": msg});
-//     //         console.warn(msg);
-//     //     } else {
-//     //         var script = document.createElement("script");
-//     //         script.src = this.WEBINA_BASE_URL + "vina.js";
-//     //         document.body.appendChild(script)
-//     //     }
-//     // }
-
-//     // meminitXHR.open("GET", memoryInitializer, !0);
-//     // meminitXHR.responseType = "arraybuffer";
-//     // meminitXHR.send(null);
+// For some reason, WebAssembly always uses one more processor
+// than specified. Compensate for that here. But sometimes it
+// doesn't, so commenting out... Confusing.
+// if ((vinaParams["cpu"] !== undefined) && (vinaParams["cpu"] > 1)) {
+//     vinaParams["cpu"] = vinaParams["cpu"] - 1;
 // }
-
-// const webinaMod = new WEBINA_Module({
-//     logReadFiles: true,
-//     noInitialRun: true,
-//     locateFile: (path: string) => {
-//         console.log(path);
-//         return `webina/${path}`;
-//     },
-//     preRun: [
-//         function (This: any) {
-//             // Save the pdb file to the file system
-//             // This.FS.writeFile(params.pdbFiles.prot.name, params.pdbFiles.prot.contents);
-//             // This.FS.writeFile(params.pdbFiles.cmpd.name, params.pdbFiles.cmpd.contents);
-//         }
-//     ],
-//     print: (text: string) => {
-//         console.log(text);
-//     },
-//     printErr: (text: string) => {
-//         console.log(text);
-//     },
-// });
-
-// debugger;
-
-// // // A shiv for decodeBase64.
-// // var decodeBase64 = "function" == typeof atob ? atob : function(r: string) {
-// //     var e, t, a, i, n, o, f = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-// //         m = "",
-// //         s = 0;
-// //     for (r = r.replace(/[^A-Za-z0-9\+\/\=]/g, ""); e = f.indexOf(r.charAt(s++)) << 2 | (i = f.indexOf(r.charAt(s++))) >> 4, t = (15 & i) << 4 | (n = f.indexOf(r.charAt(s++))) >> 2, a = (3 & n) << 6 | (o = f.indexOf(r.charAt(s++))), m += String.fromCharCode(e), 64 !== n && (m += String.fromCharCode(t)), 64 !== o && (m += String.fromCharCode(a)), s < r.length;)
-// //     return m
-// // };
-
-// // // Make Webina global namespace.
-// // let Webina = (function() {
-// //     return {
-// //         WEBINA_ENVIRONMENT_IS_NODE: (<any>window)["WEBINA_ENVIRONMENT_IS_NODE"],
-// //         WEBINA_lengthBytesUTF8: (<any>window)["WEBINA_lengthBytesUTF8"],
-// //         WEBINA_stringToUTF8Array: (<any>window)["WEBINA_stringToUTF8Array"],
-// //         WEBINA_assert: (<any>window)["WEBINA_assert"],
-// //         WEBINA_ASSERTIONS: 1,
-// //         WEBINA_DATA_URI_PREFIX: "data:application/octet-stream;base64,",
-// //         WEBINA_BASE_URL: "./",
-// //         FS: (<any>window)["FS"],
-
-// //         start: function start(vinaParams: IVinaParams, receptorPDBQTTxt: string, ligandPDBQTTxt: string, onDone?: any, onError?: any, baseUrl?: string): void {
-// //             // baseUrl = undefined;  // For debugging.
-// //             let baseUrlMsg = "\nWEBINA\n======\n\n";
-// //             if (baseUrl !== undefined) {
-// //                 if (baseUrl.slice(baseUrl.length - 1) !== "/") {
-// //                     baseUrl += "/";
-// //                 }
-// //                 this.WEBINA_BASE_URL = baseUrl;
-// //                 baseUrlMsg += "User specified baseUrl: " + baseUrl + "\n";
-// //             } else {
-// //                 baseUrlMsg += "No baseUrl specified, so using ./\n\n";
-// //                 baseUrlMsg += "Use Webina.start() to specify the baseUrl:\n";
-// //                 baseUrlMsg += "    function start(vinaParams, receptorPDBQTTxt, \n"
-// //                 baseUrlMsg += "                   ligandPDBQTTxt, onDone, \n";
-// //                 baseUrlMsg += "                   onError, baseUrl)\n";
-// //             }
-// //             baseUrlMsg += "\nExpecting files at the following locations:\n";
-// //             for (let i = 0; i < 5; i++) {
-// //                 const fileName = ["Webina.min.js", "vina.html.mem",
-// //                                   "vina.min.js", "vina.worker.min.js",
-// //                                   "vina.wasm"][i];
-// //                 baseUrlMsg += "    " + (baseUrl === undefined ? "./" : baseUrl) + fileName + "\n";
-// //             }
-// //             baseUrlMsg += "\n";
-
-// //             if (baseUrl !== undefined) {
-// //                 console.log(baseUrlMsg);
-// //             } else {
-// //                 console.warn(baseUrlMsg);
-// //             }
-
-// //             if (onError === undefined) {
-// //                 onError = () => {
-// //                     console.log("Webina encountered an error! Does your browser support WebAssembly?");
-// //                 }
-// //             }
-
-// //             // Create a module object for WASM.
-// //             const Module = {
-// //                 "preRun": [],
-// //                 "postRun": [],
-// //                 "stdOut": "",
-// //                 "stdErr": "",
-// //                 // "print": function() {
-// //                 //     return function(e) {
-// //                 //         1 < arguments.length && (
-// //                 //             e = Array.prototype.slice.call(arguments).join(" ")
-// //                 //         ),
-// //                 //         (<any>window)["WEBINA_Module"]["stdOut"] += e + "\n"
-// //                 //     }
-// //                 // }(),
-// //                 // "printErr": function(e) {
-// //                 //     // 1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" ")), console.error(e)
-// //                 //     1 < arguments.length && (
-// //                 //         e = Array.prototype.slice.call(arguments).join(" ")
-// //                 //     ),
-// //                 //     (<any>window)["WEBINA_Module"]["stdErr"] += e + "\n"
-// //                 // },
-// //                 "setStatus": (e) => {
-// //                     if (e === "") {
-// //                         // This happens when it is done running.
-// //                         if (onDone !== undefined) {
-// //                             let outTxt: string = new TextDecoder("utf-8").decode(
-// //                                 (<any>window)["FS"]["readFile"]('ligand_out.pdbqt')
-// //                             );
-// //                             let stdOut: string = ""; // (<any>window)["WEBINA_Module"]["stdOut"];
-// //                             let stdErr: string = ""; // (<any>window)["WEBINA_Module"]["stdErr"];
-// //                             onDone(outTxt, stdOut, stdErr);
-// //                         }
-// //                     }
-// //                 },
-// //                 "onError": onError,
-// //                 "catchError": (n) => {
-// //                     onError(n);
-// //                     // throw n;  // Don't throw the errr. You're catching it now.
-// //                 },
-// //                 "receptorPDBQTTxt": receptorPDBQTTxt,
-// //                 "ligandPDBQTTxt": ligandPDBQTTxt
-// //             };
-
-// //             if (vinaParams["receptor"] !== undefined) {
-// //                 console.warn("Webina does not support Vina's --receptor parameter. Instead, pass the content of the receptor file as a string to the webina.start() function.");
-// //             }
-
-// //             if (vinaParams["receptor"] !== undefined) {
-// //                 console.warn("Webina does not support Vina's --ligand parameter. Instead, pass the content of the ligand file as a string to the webina.start() function.");
-// //             }
-
-// //             // Receptor and ligand files are always the same.
-// //             Module['arguments'] = [
-// //                 '--receptor', '/receptor.pdbqt',
-// //                 '--ligand', '/ligand.pdbqt',
-// //             ];
-
-// //             // For some reason, WebAssembly always uses one more processor
-// //             // than specified. Compensate for that here. But sometimes it
-// //             // doesn't, so commenting out... Confusing.
-// //             // if ((vinaParams["cpu"] !== undefined) && (vinaParams["cpu"] > 1)) {
-// //             //     vinaParams["cpu"] = vinaParams["cpu"] - 1;
-// //             // }
-
-// //             // Add in the remaining values. Note that there is no validation here.
-// //             const paramNames = Object.keys(vinaParams);
-// //             const paramNamesLen = paramNames.length;
-// //             for (let i = 0; i < paramNamesLen; i++) {
-// //                 const key = paramNames[i];
-// //                 const val = vinaParams[key];
-// //                 Module['arguments'].push('--' + key);
-
-// //                 if (typeof(val) !== "boolean") {
-// //                     Module['arguments'].push(String(val));
-// //                 }
-// //             }
-
-// //             // const webinaMod = new WEBINA_Module(Module);
-
-// //             // (<any>window)["WEBINA_Module"] = WEBINA_Module;
-
-// //             // Initialize the memory
-// //             // let memoryInitializer = this.WEBINA_BASE_URL + "vina.html.mem";
-// //             // memoryInitializer = Module["locateFile"] ? Module["locateFile"](memoryInitializer, "") : memoryInitializer, Module["memoryInitializerRequestURL"] = memoryInitializer;
-
-// //             debugger;
-
-// //             // let meminitXHR = Module["memoryInitializerRequest"] = new XMLHttpRequest;
-
-// //             // meminitXHR.onloadend = () => {
-// //             //     if (meminitXHR.status === 404) {
-// //             //         let msg = "Unable to access " + memoryInitializer +". See JavaScript console for warnings. The \"baseUrl\" variable passed to Webina is likely incorrect.";
-// //             //         Module["catchError"]({"message": msg});
-// //             //         console.warn(msg);
-// //             //     } else {
-// //             //         var script = document.createElement("script");
-// //             //         script.src = this.WEBINA_BASE_URL + "vina.js";
-// //             //         document.body.appendChild(script)
-// //             //     }
-// //             // }
-
-// //             // meminitXHR.open("GET", memoryInitializer, !0);
-// //             // meminitXHR.responseType = "arraybuffer";
-// //             // meminitXHR.send(null);
-// //         },
-
-// //         isDataURI: function(r) {
-// //             // @ts-ignore
-// //             return String.prototype.startsWith ? r.startsWith(this.WEBINA_DATA_URI_PREFIX) : 0 === r.indexOf(this.WEBINA_DATA_URI_PREFIX)
-// //         },
-
-// //         intArrayFromBase64: function (e) {
-// //             if ("boolean" == typeof this.WEBINA_ENVIRONMENT_IS_NODE && this.WEBINA_ENVIRONMENT_IS_NODE) {
-// //                 var t;
-// //                 try {
-// //                     t = Buffer.from(e, "base64")
-// //                 } catch (r) {
-// //                     t = new Buffer(e, "base64")
-// //                 }
-// //                 return new Uint8Array(t.buffer, t.byteOffset, t.byteLength)
-// //             }
-// //             try {
-// //                 for (var r = decodeBase64(e) as string, a = new Uint8Array(r.length), i = 0; i < r.length; ++i) a[i] = r.charCodeAt(i);
-// //                 return a
-// //             } catch (r) {
-// //                 throw new Error("Converting base64 string to bytes failed.")
-// //             }
-// //         },
-
-// //         // Not used?
-// //         tryParseAsDataURI: function (r) {
-// //             if (this.isDataURI(r)) return this.intArrayFromBase64(r.slice(this.WEBINA_DATA_URI_PREFIX.length))
-// //         },
-
-// //         // Not used?
-// //         intArrayFromString: function (r, e, t) {
-// //             var a = 0 < t ? t : this.WEBINA_lengthBytesUTF8(r) + 1,
-// //                 i = new Array(a),
-// //                 n = this.WEBINA_stringToUTF8Array(r, i, 0, i.length);
-// //             return e && (i.length = n), i
-// //         },
-
-// //         // Not used?
-// //         intArrayToString: function (r) {
-// //             for (var e = [], t = 0; t < r.length; t++) {
-// //                 var a = r[t];
-// //                 255 < a && (this.WEBINA_ASSERTIONS && this.WEBINA_assert(!1, "Character code " + a + " (" + String.fromCharCode(a) + ")  at offset " + t + " not in 0x00-0xFF."), a &= 255), e.push(String.fromCharCode(a))
-// //             }
-// //             return e.join("")
-// //         }
-// //     };
-// // })();

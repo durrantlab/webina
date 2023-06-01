@@ -85,11 +85,14 @@ let computedFunctions = {
     "appropriatePdbLoaded"(): boolean|undefined {
         switch (this["type"]) {
             case "receptor":
-                return this.appropriateReceptorPdbLoaded();
+                // @ts-ignore
+                return this.appropriateReceptorPdbLoaded;
             case "ligand":
-                return this.appropriateLigandPdbLoaded();
+                // @ts-ignore
+                return this.appropriateLigandPdbLoaded;
             case "docked":
-                return this.appropriateDockedPdbLoaded();
+                // @ts-ignore
+                return this.appropriateDockedPdbLoaded;
         }
     },
 
