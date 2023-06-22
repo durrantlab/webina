@@ -1,15 +1,15 @@
 Changes
 =======
 
-1.0.4 (WIP)
------------
+1.0.4
+-----
 
-Webpack 5
-Vina 1.2.3
-
-TODO: Increase version # everywhere to 1.0.4
-XXXXXXXX.XX needs replacing
-
+* Updated from Webpack 4 to Webpack 5
+* Webina is now based on the latest version of AutoDock Vina, version 1.2.3.
+* Commented out information on compiling Webina in the README.md file. The build
+  process is now more complicated, and we intend to reimplement Webina in the
+  near future.
+* Removed references to `minimal_example.html` for the same reason.
 
 1.0.3
 -----

@@ -48,7 +48,7 @@ let computedFunctions = {
      * @returns boolean  True if generating 3D coordinates is required.
      */
     "gen3DRequired"(): boolean {
-        if (["CAN", "SMI", "SMILES"].indexOf(this["currentExt"]()) !== -1) {
+        if (["CAN", "SMI", "SMILES"].indexOf(this["currentExt"] as unknown as string) !== -1) {
             // It's one of the formats that always required that 3D
             // coordinates be generated.
             this["gen3D"] = true;
@@ -80,7 +80,7 @@ let methodsFunctions = {
             content = content.substr(0, content.length - 1);
         }
 
-        if (this["currentExt"]().toUpperCase() === "PDB") {
+        if (this["currentExt"].toUpperCase() === "PDB") {
             let msg = this.pdbOptimization(currentPDBOptimizationLevel);
             if (msg !== "") {
                 successMsgs.push(msg);
@@ -100,7 +100,7 @@ let methodsFunctions = {
         html.style.overflow = "hidden";
         frameWindow["PDBQTConvert"]["convert"](
             content,
-            this["currentExt"]().toLowerCase(),
+            this["currentExt"].toLowerCase(),
             this["currentType"]==="ligand",
             this["addHydrogens"],
             this["gen3D"],
@@ -144,7 +144,7 @@ let methodsFunctions = {
             }
 
             this["$refs"]["convert-modal"].hide();
-            this["$bvModal"]["msgBoxOk"]("Could not convert your file. Are you sure it is a properly formatted " + this["currentExt"]() + " file? If so, it may be too large to convert in the browser.", {
+            this["$bvModal"]["msgBoxOk"]("Could not convert your file. Are you sure it is a properly formatted " + this["currentExt"] + " file? If so, it may be too large to convert in the browser.", {
                 "title": "Error Converting File!",
             });
             store.commit("setVar", {

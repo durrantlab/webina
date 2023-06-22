@@ -5,7 +5,7 @@
 // There are a few variables and functions from vina.js that I want to easily
 // access from here.
 
-let VERSION = "XXXXXXXXXXXXX.X"; // Replaced by compile script.
+let VERSION = "1.04";
 console.log("Webina Library " + VERSION);
 console.log("    Compiled from Vina 1.2.3 codebase:");
 console.log("    http://vina.scripps.edu/");
@@ -58,7 +58,7 @@ export function start(
         baseUrlMsg += "                   onError, baseUrl)\n";
     }
     baseUrlMsg += "\nExpecting files at the following locations:\n";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
         const fileName = [
             // "Webina.js",
             // "vina.html.mem",

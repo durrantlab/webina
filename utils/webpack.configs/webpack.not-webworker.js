@@ -93,10 +93,10 @@ module.exports = merge(common, {
                     from: "src/Webina/vina.wasm",
                     to: "Webina/vina.wasm",
                 },
-                {
-                    from: "src/minimal_example.html",
-                    to: "minimal_example.html",
-                },
+                // {
+                    // from: "src/minimal_example.html",
+                    // to: "minimal_example.html",
+                // },
                 // {
                 //     from: 'src/babel_convert.html',
                 //     to: 'babel_convert.html'
