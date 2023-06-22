@@ -2,13 +2,16 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
-declare var Vue;
+import { store } from "../../Vue/Store";
+
+declare let Vue: any;
+declare let jQuery: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
     /** Gets and sets the file. On setting, also checks for a valid extension
      * and opens the convert modal if necessary. */
-    "val": {
+    val: {
         get(): any {
             return this["file"];
         },
@@ -33,13 +36,14 @@ let computedFunctions = {
 
             if (convertExt.indexOf(ext) !== -1) {
                 // Set the filename.
-                this.$store.commit("updateFileName", {
+                store.commit("updateFileName", {
                     type: this["id"],
                     filename: val.name,
                 });
 
+                // @ts-ignore
                 this.getModelFileContents(val).then((text: string) => {
-                    this.$store.commit("openConvertFileModal", {
+                    store.commit("openConvertFileModal", {
                         ext: ext,
                         type: this["id"],
                         file: text,
@@ -68,7 +72,7 @@ let computedFunctions = {
                 msg +=
                     '"' + okFilesString + '." Your file ends in "' + ext + '."';
 
-                this.$store.commit("openModal", {
+                store.commit("openModal", {
                     title: "Invalid File Extension!",
                     body: "<p>" + msg + "</p>",
                 });
@@ -77,22 +81,25 @@ let computedFunctions = {
             }
 
             this["file"] = val;
-            this.$store.commit("setValidationParam", {
+            store.commit("setValidationParam", {
                 name: this["id"],
                 val: true,
             });
 
-            this.$store.commit("updateFileName", {
+            store.commit("updateFileName", {
                 type: this["id"],
                 filename: val.name,
             });
 
-            this.getModelFileContents(this["file"]).then((text: string) => {
-                this.$store.commit("setVar", {
-                    name: this["id"] + "Contents",
-                    val: text,
-                });
-            });
+            // @ts-ignore
+            this.getModelFileContents(this["file"]).then(
+                (text: string) => {
+                    store.commit("setVar", {
+                        name: this["id"] + "Contents",
+                        val: text,
+                    });
+                }
+            );
         },
     },
 
@@ -100,7 +107,7 @@ let computedFunctions = {
      * Generates a string describing all the acceptable file formats.
      * @returns string  The string.
      */
-    "allAcceptableFiles"(): string {
+    allAcceptableFiles(): string {
         return (
             this["accept"] +
             (this["convert"] === "" ? "" : ", " + this["convert"])
@@ -111,13 +118,16 @@ let computedFunctions = {
      * Determine whether the component value is valid.
      * @returns boolean  True if it is valid, false otherwise.
      */
-    "isValid"(): boolean {
+    isValid(): boolean {
         if (this["file"] !== false && this["file"] !== null) {
             return true;
-        } else if (this.$store.state[this["id"] + "ForceValidate"] === true) {
+        } else if (
+            store.state[this["id"] + "ForceValidate"] ===
+            true
+        ) {
             // This runs when you convert from a non-pdbqt file
             // converted to pdbqt.
-            let flnm = this.$store.state[this["id"] + "FileName"];
+            let flnm = store.state[this["id"] + "FileName"];
             this["file"] = new File([], flnm);
             this["placeholder"] = flnm;
             return true;
@@ -136,17 +146,17 @@ let methodsFunctions = {
      */
     getModelFileContents(fileObj): Promise<any> {
         return new Promise((resolve, reject) => {
-            var fr = new FileReader();
+            let fr = new FileReader();
             fr.onload = () => {
                 // @ts-ignore: Not sure why this causes Typescript problems.
-                var data = new Uint8Array(fr.result);
+                let data = new Uint8Array(fr.result);
                 resolve(new TextDecoder("utf-8").decode(data));
             };
             fr.readAsArrayBuffer(fileObj);
 
             // Reset the show non-protein atom's link.
             if (this["id"] === "receptor") {
-                this.$store.commit("setVar", {
+                store.commit("setVar", {
                     name: "showKeepProteinOnlyLink",
                     val: true,
                 });
@@ -160,22 +170,30 @@ let methodsFunctions = {
  * @returns void
  */
 function mountedFunction(): void {
+    // @ts-ignore
+    const id = this["id"];
+
     // Make default validation entry.
-    if (this.$store.state["validation"][this["id"]] === undefined) {
-        this.$store.commit("setValidationParam", {
-            name: this["id"],
+    if (
+        store.state["validation"][id] === undefined
+    ) {
+        store.commit("setValidationParam", {
+            // @ts-ignore
+            name: id,
             val: false,
         });
     }
 
     // If it's not required, automatically validate.
+    // @ts-ignore
     if (this["required"] === false) {
-        this.$store.commit("setValidationParam", {
-            name: this["id"],
+        // @ts-ignore
+        store.commit("setValidationParam", {
+            name: id,
             val: true,
         });
 
-        jQuery("." + this["id"])
+        jQuery("." + id)
             .find("input")
             .removeClass("is-invalid");
     }
@@ -191,14 +209,14 @@ export function setup(): void {
          * Get the data associated with this component.
          * @returns any  The data.
          */
-        "data"(): any {
+        data(): any {
             return {
                 file: false,
                 placeholder: "Choose a file or drop it here...",
             };
         },
-        "methods": methodsFunctions,
-        "template": `
+        methods: methodsFunctions,
+        template: `
             <form-group
                 :label="label"
                 :id="'input-group-' + id"
@@ -219,33 +237,33 @@ export function setup(): void {
                 <small v-if="(!isValid) && (required === true)" alert tabindex="-1" class="text-danger form-text">{{invalidMsg}}</small>
             </form-group>
         `,
-        "props": {
-            "label": String,
-            "id": String,
-            "description": String,
-            "invalidMsg": {
-                "type": String,
-                "default": "This field is required!",
+        props: {
+            label: String,
+            id: String,
+            description: String,
+            invalidMsg: {
+                type: String,
+                default: "This field is required!",
             },
-            "required": {
-                "type": Boolean,
-                "default": true,
+            required: {
+                type: Boolean,
+                default: true,
             },
-            "accept": {
-                "type": String,
-                "default": ".pdbqt, .out, .pdb",
+            accept: {
+                type: String,
+                default: ".pdbqt, .out, .pdb",
             },
-            "convert": {
-                "type": String,
-                "default": "",
+            convert: {
+                type: String,
+                default: "",
             },
         },
-        "computed": computedFunctions,
+        computed: computedFunctions,
 
         /**
          * Runs when the vue component is mounted.
          * @returns void
          */
-        "mounted": mountedFunction,
+        mounted: mountedFunction,
     });
 }

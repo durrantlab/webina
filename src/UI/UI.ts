@@ -3,11 +3,11 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 
-import * as Store from "../Vue/Store";
 import * as Utils from "../Utils";
 import { VERSION } from "../Version";
+import { store } from "../Vue/Store";
 
-declare var Vue;
+declare let Vue: any;
 
 /**
  * Setup the main Vue app.
@@ -16,7 +16,7 @@ declare var Vue;
 export function setup(): void {
     new Vue({
         "el": '#app',
-        "store": Store.store,
+        "store": store,
         "template": `
             <div class="container-fluid">
                 <open-modal></open-modal>
@@ -79,11 +79,11 @@ export function setup(): void {
             /** Gets and sets the tabIdx. */
             "tabIdx": {
                 get(): number {
-                    return this.$store.state["tabIdx"];
+                    return store.state["tabIdx"];
                 },
 
                 set(val: number): void {
-                    this.$store.commit("setVar", {
+                    store.commit("setVar", {
                         name: "tabIdx",
                         val: val
                     });
@@ -95,7 +95,7 @@ export function setup(): void {
              * @returns boolean  True if it is disabled, false otherwise.
              */
             "parametersTabDisabled"(): boolean {
-                return this.$store.state["parametersTabDisabled"];
+                return store.state["parametersTabDisabled"];
             },
 
             /**
@@ -103,7 +103,7 @@ export function setup(): void {
              * @returns boolean  True if it is disabled, false otherwise.
              */
             "runningTabDisabled"(): boolean {
-                return this.$store.state["runningTabDisabled"];
+                return store.state["runningTabDisabled"];
             },
 
             /**
@@ -111,7 +111,7 @@ export function setup(): void {
              * @returns boolean  True if it is disabled, false otherwise.
              */
             "outputTabDisabled"(): boolean {
-                return this.$store.state["outputTabDisabled"];
+                return store.state["outputTabDisabled"];
             },
 
             /**
@@ -119,7 +119,7 @@ export function setup(): void {
              * @returns boolean  True if it is disabled, false otherwise.
              */
             "existingVinaOutputTabDisabled"(): boolean {
-                return this.$store.state["existingVinaOutputTabDisabled"];
+                return store.state["existingVinaOutputTabDisabled"];
             },
 
             /**
@@ -127,7 +127,7 @@ export function setup(): void {
              * @returns boolean  True if it is disabled, false otherwise.
              */
             "startOverTabDisabled"(): boolean {
-                return this.$store.state["startOverTabDisabled"];
+                return store.state["startOverTabDisabled"];
             }
         },
 
@@ -138,7 +138,7 @@ export function setup(): void {
          * @returns void
          */
         "mounted"() {
-            // window["$store"] = this.$store;  // For debugging
+            // (<any>window)["$store"] = store;  // For debugging
         }
     })
 }

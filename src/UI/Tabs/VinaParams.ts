@@ -4,9 +4,12 @@
 
 
 import * as Utils from "../../Utils";
+import { store } from "../../Vue/Store";
+import * as Webina from "../../Webina/Webina";
 
-declare var Vue;
-declare var Webina;
+declare let Vue: any;
+declare let jQuery: any;
+// declare let Webina;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -15,17 +18,17 @@ let computedFunctions = {
      * @returns boolean  True if they should be hidden, false otherwise.
      */
     "hideDockingBoxParams"(): boolean {
-        return this.$store.state.hideDockingBoxParams;
+        return store.state.hideDockingBoxParams;
     },
 
     /** Whether to show the keep-protein-only link. Has both a getter and a setter. */
     "showKeepProteinOnlyLink": {
         get(): number {
-            return this.$store.state["showKeepProteinOnlyLink"];
+            return store.state["showKeepProteinOnlyLink"];
         },
 
         set(val: number): void {
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: "showKeepProteinOnlyLink",
                 val: val
             });
@@ -45,47 +48,47 @@ let methodsFunctions = {
 
         setTimeout(() => {  // Vue.nextTick doesn't work...
             // Update some values.
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: "receptorContents",
-                val: this.$store.state["receptorContentsExample"]
+                val: store.state["receptorContentsExample"]
             });
 
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: "ligandContents",
-                val: this.$store.state["ligandContentsExample"]
+                val: store.state["ligandContentsExample"]
             });
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: "crystalContents",
-                val: this.$store.state["crystalContentsExample"]
+                val: store.state["crystalContentsExample"]
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "center_x",
                 val: 41.03
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "center_y",
                 val: 18.98
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "center_z",
                 val: 14.03
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "size_x",
                 val: 20.00
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "size_y",
                 val: 20.00
             });
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: "size_z",
                 val: 20.00
             });
 
             // Also update file names so example vina command line is valid.
-            this.$store.commit("updateFileName", { type: "ligand", filename: "ligand_example.pdbqt" });
-            this.$store.commit("updateFileName", { type: "receptor", filename: "receptor_example.pdbqt" });
+            store.commit("updateFileName", { type: "ligand", filename: "ligand_example.pdbqt" });
+            store.commit("updateFileName", { type: "receptor", filename: "receptor_example.pdbqt" });
 
             // These values should now validate.
             let validateVars = [
@@ -95,7 +98,7 @@ let methodsFunctions = {
             const validateVarsLen = validateVars.length;
             for (let i = 0; i < validateVarsLen; i++) {
                 const validateVar = validateVars[i];
-                this.$store.commit("setValidationParam", {
+                store.commit("setValidationParam", {
                     name: validateVar,
                     val: true
                 });
@@ -109,7 +112,7 @@ let methodsFunctions = {
      */
     "onSubmitClick"(): void {
         if (this["validate"]() === true) {
-            this.$store.commit("disableTabs", {
+            store.commit("disableTabs", {
                 "parametersTabDisabled": true,
                 "existingVinaOutputTabDisabled": true,
                 "runningTabDisabled": false,
@@ -118,7 +121,7 @@ let methodsFunctions = {
             jQuery("body").addClass("waiting");
 
             Vue.nextTick(() => {
-                this.$store.commit("setVar", {
+                store.commit("setVar", {
                     name: "tabIdx",
                     val: 2
                 });
@@ -129,21 +132,21 @@ let methodsFunctions = {
                     // }, 1000);
 
                     // Keep track of start time
-                    this.$store.commit("setVar", {
+                    store.commit("setVar", {
                         name: "time",
                         val: new Date().getTime()
                     });
 
                     Webina.start(
-                        this.$store.state["vinaParams"],
-                        this.$store.state["receptorContents"],
-                        this.$store.state["ligandContents"],
+                        store.state["vinaParams"],
+                        store.state["receptorContents"],
+                        store.state["ligandContents"],
 
                         // onDone
                         (outPdbqtFileTxt: string, stdOut: string, stdErr: string) => {
-                            this.$store.commit("setVar", {
+                            store.commit("setVar", {
                                 name: "time",
-                                val: Math.round((new Date().getTime() - this.$store.state["time"]) / 100) / 10
+                                val: Math.round((new Date().getTime() - store.state["time"]) / 100) / 10
                             });
 
                             this.afterWASM(outPdbqtFileTxt, stdOut, stdErr);
@@ -152,7 +155,7 @@ let methodsFunctions = {
                         // onError
                         (errObj: any) => {
                             // Disable some tabs
-                            this.$store.commit("disableTabs", {
+                            store.commit("disableTabs", {
                                 "parametersTabDisabled": true,
                                 "existingVinaOutputTabDisabled": true,
                                 "runningTabDisabled": true,
@@ -175,7 +178,7 @@ let methodsFunctions = {
      * @returns void
      */
     "onDrawLigClick"(e: any): void {
-        this.$store.commit("drawSmilesModal");
+        store.commit("drawSmilesModal");
         e.preventDefault();
         e.stopPropagation();
     },
@@ -186,17 +189,17 @@ let methodsFunctions = {
      * @returns void
      */
     "onShowKeepProteinOnlyClick"(e: any): void {
-        let linesToKeep = Utils.keepOnlyProteinAtoms(this.$store.state["receptorContents"]);
+        let linesToKeep = Utils.keepOnlyProteinAtoms(store.state["receptorContents"]);
 
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "receptorContents",
             val: linesToKeep
         });
 
-        this.$store.commit("updateFileName", {
+        store.commit("updateFileName", {
             type: "receptor",
             filename: Utils.replaceExt(
-                this.$store.state["receptorFileName"],
+                store.state["receptorFileName"],
                 "protein.pdbqt"
             )
         });
@@ -214,7 +217,7 @@ let methodsFunctions = {
      * @returns boolean  True if they are valid, false otherwise.
      */
     "validate"(modalWarning: boolean=true): boolean {
-        let validations = this.$store.state["validation"];
+        let validations = store.state["validation"];
 
         let pass = true;
 
@@ -238,14 +241,14 @@ let methodsFunctions = {
 
         if (pass === false) {
             if (modalWarning === true) {
-                this.$store.commit("openModal", {
+                store.commit("openModal", {
                     title: "Invalid Parameters!",
                     body: "<p>Please correct the following parameter(s) before continuing: <code>" + badParams.join(" ") + "</code></p>"
                 });
             }
         }
 
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "vinaParamsValidates",
             val: pass
         })
@@ -262,7 +265,7 @@ let methodsFunctions = {
      */
     afterWASM(outPdbqtFileTxt: string, stdOut: string, stdErr: string): void {
         // Disable some tabs
-        this.$store.commit("disableTabs", {
+        store.commit("disableTabs", {
             "parametersTabDisabled": true,
             "existingVinaOutputTabDisabled": true,
             "runningTabDisabled": true,
@@ -271,16 +274,16 @@ let methodsFunctions = {
         });
 
         // Switch to output tab.
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "tabIdx",
             val: 3
         });
 
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "stdOut",
             val: stdOut
         });
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "outputContents",
             val: outPdbqtFileTxt
         });
@@ -291,7 +294,7 @@ let methodsFunctions = {
 
         // Process the standard output (extract scores and rmsds) and
         // frames.
-        this.$store.commit("outputToData");
+        store.commit("outputToData");
 
         jQuery("body").removeClass("waiting");
     },
@@ -302,7 +305,7 @@ let methodsFunctions = {
      * @returns void
      */
     showWebinaError(message: string): void {
-        this.$store.commit("openModal", {
+        store.commit("openModal", {
             title: "Webina Error!",
             body: "<p>Webina returned the following error: <code>" + message + "</code></p>"
         });
@@ -314,6 +317,7 @@ let methodsFunctions = {
  * @returns void
  */
 function mountedFunction(): void {
+    // @ts-ignore
     this["webAssemblyAvaialble"] = Utils.webAssemblySupported();
 }
 

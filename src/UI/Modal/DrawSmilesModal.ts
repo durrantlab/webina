@@ -2,8 +2,10 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../../Vue/Store";
 
-declare var Vue;
+
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -11,11 +13,13 @@ let computedFunctions = {
      * both get and set. */
     "drawSmilesModalShow": {
         get(): boolean {
-            return this.$store.state["drawSmilesModalShow"];
+            // @ts-ignore
+            return store.state["drawSmilesModalShow"];
         },
 
         set(val: boolean): void {
-            this.$store.commit("setVar", {
+            // @ts-ignore
+            store.commit("setVar", {
                 name: "drawSmilesModalShow",
                 val
             });
@@ -27,26 +31,27 @@ let computedFunctions = {
 let methodsFunctions = {
     "startConversion"() {
         // Get smiles from widget
-        let frameWindow = document.getElementById("draw-widget")["contentWindow"];
-        let smiles = frameWindow["getSmiles"]();
+        let frameWindow = (document.getElementById("draw-widget") as HTMLIFrameElement)["contentWindow"];
+        // @ts-ignore
+        let smiles = (<Window>frameWindow)["getSmiles"]();
 
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "convertFileExt",
             val: "smi"
         });
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "convertFileType",
             val: "ligand"
         });
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "convertFile",
             val: smiles
         });
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "convertFileModalShow",
             val: true
         });
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "ligandFileName",
             val: "drawn_ligand.pdbqt"
         });

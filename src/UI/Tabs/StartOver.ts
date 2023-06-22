@@ -2,7 +2,8 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
-declare var Vue;
+declare let Vue: any;
+declare let jQuery: any;
 
 /** An object containing the vue-component methods functions. */
 let methodsFunctions = {

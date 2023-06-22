@@ -22,10 +22,10 @@ import * as SubSection from "../UI/SubSection";
 import * as VinaCommandline from "../UI/VinaCommandline";
 import * as FormButton from "../UI/Forms/FormButton";
 
-declare var Vue;
-declare var Vuex;
-declare var BootstrapVue;
-declare var jQuery;
+declare let Vue: any;
+declare let Vuex: any;
+declare let BootstrapVue: any;
+declare let jQuery: any;
 
 /**
  * Load and setup all Vue components.

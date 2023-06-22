@@ -3,8 +3,8 @@ const merge = require('webpack-merge');
 // const webworker = require('./webpack.webworker.js');
 const notWebworker = require('./webpack.not-webworker.js');
 const path = require('path');
-const ClosurePlugin = require('closure-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const ClosurePlugin = require('closure-webpack-plugin');
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 let forProd = {
     mode: 'production',
@@ -15,30 +15,30 @@ let forProd = {
         // sideEffects: false,
         // concatenateModules: false,
         minimizer: [
-            new OptimizeCSSAssetsPlugin({}),
-            new ClosurePlugin({
-                mode: 'STANDARD', // 'AGGRESSIVE_BUNDLE', // 'STANDARD',
-                platform: "java"
-            }, {
-                // debug: true,
-                // renaming: false
-                externs: [
-                    path.resolve(__dirname, '../closure/custom_extern.js')
-                ],
-                compilation_level: 'ADVANCED',
-                // formatting: 'PRETTY_PRINT',
-            })
+            // new OptimizeCSSAssetsPlugin({}),
+            // new ClosurePlugin({
+            //     mode: 'STANDARD', // 'AGGRESSIVE_BUNDLE', // 'STANDARD',
+            //     platform: "java"
+            // }, {
+            //     // debug: true,
+            //     // renaming: false
+            //     externs: [
+            //         path.resolve(__dirname, '../closure/custom_extern.js')
+            //     ],
+            //     compilation_level: 'ADVANCED',
+            //     // formatting: 'PRETTY_PRINT',
+            // })
         ],
         splitChunks: {
             chunks: 'async',
             minSize: 30000,
-            maxSize: 0,
+            // maxSize: 0,
             minChunks: 1,
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
             automaticNameDelimiter: '~',
-            automaticNameMaxLength: 30,
-            name: true,
+            // automaticNameMaxLength: 30,
+            name: false,
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,

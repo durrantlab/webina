@@ -2,19 +2,21 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../../Vue/Store";
 
-declare var Vue;
+
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
     /** Gets and sets the vinaParams object. */
     "val": {
         get(): any {
-            return this.$store.state["vinaParams"][this["id"]];
+            return store.state["vinaParams"][this["id"]];
         },
 
         set(val: any): void {
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: this["id"],
                 val: val
             });

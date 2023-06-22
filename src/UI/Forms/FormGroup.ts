@@ -3,7 +3,7 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 
-declare var Vue;
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -20,7 +20,8 @@ let computedFunctions = {
      * @returns number  Returns 3 if it has a label, 0 otherwise.
      */
     "labelCols"(): number {
-        return ((this.hasLabel === true)  && (this["labelToLeft"] === true)) ? 3 : 0;
+        // @ts-ignore
+        return ((<any>this.hasLabel === true)  && (this["labelToLeft"] === true)) ? 3 : 0;
     },
 
     /**
@@ -28,7 +29,8 @@ let computedFunctions = {
      * @returns number  Returns 2 if it has a label, 0 otherwise.
      */
     "labelColsLg"(): number {
-        return ((this.hasLabel === true)  && (this["labelToLeft"] === true)) ? 2 : 0;
+        // @ts-ignore
+        return ((<any>this.hasLabel === true)  && (this["labelToLeft"] === true)) ? 2 : 0;
     }
 }
 

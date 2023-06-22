@@ -13,7 +13,7 @@
  * @returns any  A new object with the key/value updated.
  */
 export function getNewObjWithUpdate(obj: any, key: string, val: any): any {
-    let newObj = {};
+    let newObj: {[key: string]: any} = {};
     const keys = Object.keys(obj);
     const keysLen = keys.length;
     for (let i = 0; i < keysLen; i++) {

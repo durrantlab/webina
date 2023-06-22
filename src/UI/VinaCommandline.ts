@@ -2,8 +2,10 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
-declare var Vue;
-declare var FileSaver;
+import { store } from "../Vue/Store";
+
+declare let Vue: any;
+declare let FileSaver: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -12,7 +14,7 @@ let computedFunctions = {
      * @returns boolean  True if the validate, false otherwise.
      */
     "vinaParamsValidate"(): boolean {
-        return this.$store.state["vinaParamsValidates"];
+        return store.state["vinaParamsValidates"];
     },
 
     /**
@@ -20,14 +22,15 @@ let computedFunctions = {
      * @returns string  The mock command line.
      */
     "commandlineStr"(): string {
+        // @ts-ignore
         if (this.vinaParamsValidate === false) {
             return "First fix parameter problems above..."
         } else {
-            let params = this.$store.state["vinaParams"];
+            let params = store.state["vinaParams"];
 
             const paramNames = Object.keys(params);
             const paramNamesLen = paramNames.length;
-            const keyValPairs = [];
+            const keyValPairs: string[][] = [];
             for (let i = 0; i < paramNamesLen; i++) {
                 const paramName = paramNames[i];
                 const val = params[paramName];
@@ -56,8 +59,8 @@ let computedFunctions = {
             }
 
             return "/path/to/vina " +
-                    "--receptor " + this.$store.state["receptorFileName"] + " " +
-                    "--ligand " + this.$store.state["ligandFileName"] +
+                    "--receptor " + store.state["receptorFileName"] + " " +
+                    "--ligand " + store.state["ligandFileName"] +
                     cmdStr;
         }
     },
@@ -67,7 +70,7 @@ let computedFunctions = {
      * @returns string  The receptor file name.
      */
     "receptorFileName"(): string {
-        return this.$store.state["receptorFileName"];
+        return store.state["receptorFileName"];
     },
 
     /**
@@ -75,7 +78,7 @@ let computedFunctions = {
      * @returns string  The ligand file name.
      */
     "ligandFileName"(): string {
-        return this.$store.state["ligandFileName"];
+        return store.state["ligandFileName"];
     }
 }
 
@@ -89,10 +92,10 @@ let methodsFunctions = {
      * @returns void
      */
     "downloadFile"(e: any, type: string): void {
-        var blob = new Blob([this.$store.state[type + "Contents"]], {
+        let blob = new Blob([store.state[type + "Contents"]], {
             type: "text/plain;charset=utf-8"
         });
-        FileSaver.saveAs(blob, this.$store.state[type + "FileName"]);
+        FileSaver.saveAs(blob, store.state[type + "FileName"]);
 
         e.preventDefault();
         e.stopPropagation();

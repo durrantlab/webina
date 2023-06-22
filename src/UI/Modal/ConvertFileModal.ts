@@ -3,8 +3,9 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 import * as Utils from "../../Utils";
+import { store } from "../../Vue/Store";
 
-declare var Vue;
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -12,11 +13,11 @@ let computedFunctions = {
      * both get and set. */
     "convertFileModalShow": {
         get(): boolean {
-            return this.$store.state["convertFileModalShow"];
+            return store.state["convertFileModalShow"];
         },
 
         set(val: boolean): void {
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: "convertFileModalShow",
                 val,
             });
@@ -28,7 +29,7 @@ let computedFunctions = {
      * @returns string The extension.
      */
     "currentExt"(): string {
-        return this.$store.state["convertFileExt"].toUpperCase();
+        return store.state["convertFileExt"].toUpperCase();
     },
 
     /**
@@ -37,7 +38,7 @@ let computedFunctions = {
      * @returns string The type.
      */
     "currentType"(): string {
-        return this.$store.state["convertFileType"];
+        return store.state["convertFileType"];
     },
 
     /**
@@ -47,7 +48,7 @@ let computedFunctions = {
      * @returns boolean  True if generating 3D coordinates is required.
      */
     "gen3DRequired"(): boolean {
-        if (["CAN", "SMI", "SMILES"].indexOf(this["currentExt"]) !== -1) {
+        if (["CAN", "SMI", "SMILES"].indexOf(this["currentExt"] as unknown as string) !== -1) {
             // It's one of the formats that always required that 3D
             // coordinates be generated.
             this["gen3D"] = true;
@@ -71,10 +72,10 @@ let methodsFunctions = {
      *                                                 (if any).
      * @returns void
      */
-    "beginConvert"(e, currentPDBOptimizationLevel=1, successMsgs=[]): void {
-        let frameWindow = document.getElementById("convert-frame")["contentWindow"];
-        frameWindow["startSpinner"]();
-        let content: string = this.$store.state["convertFile"];
+    "beginConvert"(e, currentPDBOptimizationLevel=1, successMsgs: string[]=[]): void {
+        let frameWindow = <Window>(document.getElementById("convert-frame") as HTMLIFrameElement)["contentWindow"];
+        (<any>frameWindow)["startSpinner"]();
+        let content: string = store.state["convertFile"];
         while (content.substr(content.length - 1, 1) === "\n") {
             content = content.substr(0, content.length - 1);
         }
@@ -92,7 +93,11 @@ let methodsFunctions = {
             this["gen3D"] = false;
         }
 
-        frameWindow.document.querySelector("html").style.overflow = "hidden";
+        const html = frameWindow.document.querySelector("html");
+        if (html === null) {
+            throw new Error("Could not find html element in convert frame.");
+        }
+        html.style.overflow = "hidden";
         frameWindow["PDBQTConvert"]["convert"](
             content,
             this["currentExt"].toLowerCase(),
@@ -100,8 +105,8 @@ let methodsFunctions = {
             this["addHydrogens"],
             this["gen3D"],
             parseFloat(this["phVal"])
-        ).then((out) => {
-            this.$store.commit("setVar", {
+        ).then((out: any) => {
+            store.commit("setVar", {
                 name: this["currentType"] + "Contents",
                 val: out
             });
@@ -109,20 +114,20 @@ let methodsFunctions = {
             this["$refs"]["convert-modal"].hide();
 
             // This makes it look like it validated.
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: this["currentType"] + "ForceValidate",
                 val: true
             });
 
             // This actually sets the validation.
-            this.$store.commit("setValidationParam", {
+            store.commit("setValidationParam", {
                 name: this["currentType"],
                 val: true
             });
 
             // Update the filename to end in pdbqt.
-            let newFilename = Utils.replaceExt(this.$store.state[this["currentType"] + "FileName"], "converted.pdbqt");
-            this.$store.commit("updateFileName", { type: this["currentType"], filename: newFilename });
+            let newFilename = Utils.replaceExt(store.state[this["currentType"] + "FileName"], "converted.pdbqt");
+            store.commit("updateFileName", { type: this["currentType"], filename: newFilename });
 
             if (successMsgs.length !== 0) {
                 let overallMsg = successMsgs.map((m, i) => { return "(" + (i + 1).toString() + ") " + m; }).join(" ");
@@ -130,7 +135,7 @@ let methodsFunctions = {
                     "title": "Warning: File Too Big!",
                 });
             }
-        }).catch((msg) => {
+        }).catch((msg: string) => {
             // The conversion failed. But if it's a PDB file, it might be
             // worth trying to optimize it further.
             if (currentPDBOptimizationLevel <= 4) {  // one less than max number in pdbOptimization.
@@ -142,11 +147,11 @@ let methodsFunctions = {
             this["$bvModal"]["msgBoxOk"]("Could not convert your file. Are you sure it is a properly formatted " + this["currentExt"] + " file? If so, it may be too large to convert in the browser.", {
                 "title": "Error Converting File!",
             });
-            this.$store.commit("setVar", {
+            store.commit("setVar", {
                 name: this["currentType"] + "ForceValidate",
                 val: false
             });
-            this.$store.commit("updateFileName", { type: this["currentType"], filename: "" });
+            store.commit("updateFileName", { type: this["currentType"], filename: "" });
             console.log("ERROR: " + msg);
         });
 
@@ -163,7 +168,7 @@ let methodsFunctions = {
      *                  to the PDB file.
      */
     pdbOptimization(level: number): string {
-        let pdbTxt = this.$store.state["convertFile"];
+        let pdbTxt = store.state["convertFile"];
 
         let msg = "";
 
@@ -179,7 +184,7 @@ let methodsFunctions = {
                     msg = "Keep only the first frame."
                 }
 
-                pdbTxt = pdbTxt.split("\n").filter(l => l.slice(0, 5) === "ATOM " || l.slice(0, 7) === "HETATM ").join("\n");
+                pdbTxt = pdbTxt.split("\n").filter((l: string) => l.slice(0, 5) === "ATOM " || l.slice(0, 7) === "HETATM ").join("\n");
                 break;
             case 2:
                 // Try removing everything but protein atoms.
@@ -189,24 +194,24 @@ let methodsFunctions = {
             case 3:
                 // Keep only the first chain.
                 let chain = pdbTxt.slice(21,22);  // first chain
-                pdbTxt = pdbTxt.split("\n").filter(l => l.slice(21,22) === chain).join("\n");
+                pdbTxt = pdbTxt.split("\n").filter((l: string) => l.slice(21,22) === chain).join("\n");
                 msg = "Keep only the first chain (chain " + chain + ").";
                 break;
             case 4:
                 // Remove existing hydrogen atoms.
-                pdbTxt = pdbTxt.split("\n").filter(l => l.substr(12,4).replace(/ /g, "").substr(0, 1) !== "H").join("\n");
+                pdbTxt = pdbTxt.split("\n").filter((l: string) => l.substr(12,4).replace(/ /g, "").substr(0, 1) !== "H").join("\n");
                 msg = "Remove original hydrogen atoms.";
                 break;
             case 5:
                 // Remove beta, occupancy, etc. columns.
-                pdbTxt = pdbTxt.split("\n").map(l => l.substr(0,54)).join("\n");
+                pdbTxt = pdbTxt.split("\n").map((l: string) => l.substr(0,54)).join("\n");
                 msg = "Remove original occupancy, beta, and element columns.";
                 break;
         }
 
         // console.log("HHHHH>>> " + msg + " >>>> " + pdbTxt.length.toString());
 
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: "convertFile",
             val: pdbTxt
         });
@@ -221,17 +226,17 @@ let methodsFunctions = {
     "cancelPressed"(): void {
         // Not sure the below is really necessary, but let's just make
         // sure.
-        this.$store.commit("setVar", {
+        store.commit("setVar", {
             name: this["currentType"] + "FileName",
             val: undefined
         });
 
-        this.$store.commit("setValidationParam", {
+        store.commit("setValidationParam", {
             name: this["currentType"],
             val: false
         });
 
-        this.$store.commit("updateFileName", { type: this["currentType"], filename: "" });
+        store.commit("updateFileName", { type: this["currentType"], filename: "" });
     },
 
     /**
@@ -239,7 +244,7 @@ let methodsFunctions = {
      * @returns void
      */
     "reloadIFrame"(): void {
-        document.getElementById("convert-frame")["src"] = "./pdbqt_convert/index.html?startBlank";
+        (document.getElementById("convert-frame") as HTMLIFrameElement)["src"] = "./pdbqt_convert/index.html?startBlank";
     }
 }
 

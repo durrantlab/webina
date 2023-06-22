@@ -1,4 +1,4 @@
-# Webina 1.0.3 #
+# Webina 1.0.4 #
 
 ## Introduction ##
 
@@ -25,8 +25,6 @@ Additional browsers are likely to enable SharedArrayBuffer soon.
   library or web app on your own server, these are the only files you need.
   For convenience, the `webina.zip` contains the contents of the `dist/`
   directory.
-  * `dist/minimal_example.html` shows how to use the Webina library in your
-    own programs.
   * `dist/index.html` starts the Webina web app (see
     [http://durrantlab.com/webina](http://durrantlab.com/webina) for a working
     example).
@@ -101,9 +99,9 @@ ligand PDBQT files:
   Here is an example command line: `obabel --gen3d -p -ismi ligand.smi -O
   ligand.pdbqt`
 
-### Webina JavaScript Library ###
+<!-- ### Webina JavaScript Library ###
 
-The Webina library is built on the AutoDock Vina 1.1.2 codebase, compiled to
+The Webina library is built on the AutoDock Vina 1.2.3 codebase, compiled to
 WebAssembly. Web-app developers can incorporate the library into their own
 computer-aided drug-discovery apps. See `dist/minimal_example.html` for a
 simple example of how to use the Webina library in your own programs.
@@ -115,7 +113,7 @@ systems. Instead, the contents of local files must be read through a file
 input element, using a JavaScript FileReader object. To overcome this
 limitation, the Webina library accepts text strings containing the contents of
 the input PDBQT files, rather than the file paths normally specified via Vina
-parameters such as `--receptor` and `--ligand`.
+parameters such as `--receptor` and `--ligand`. -->
 
 ### Webina Web App ###
 
@@ -273,7 +271,7 @@ these instructions:
 
 Running Webina on other operating systems (e.g., Windows) should be similar.
 
-## Compiling the Webina Web App ##
+<!-- ## Compiling the Webina Web App ##
 
 The vast majority of users will not need to compile the Webina web app on their own.
 Simply use the already compiled files in `dist/` or `webina.zip`.
@@ -292,14 +290,14 @@ should help with re-compiling on UNIX-like systems:
 Note: The Webina-library source code is located at `src/Webina/`. It has a
 separate build system (`/src/Webina/compile.sh`). If you modify any of the
 files in `/src/Webina/src/`, be sure to run `compile.sh` before building the
-larger web app via `npm run build`.
+larger web app via `npm run build`. -->
 
-## Compiling the AutoDock Vina 1.1.2 Codebase to WebAssembly ##
+<!-- ## Compiling the AutoDock Vina 1.2.3 Codebase to WebAssembly ##
 
-We used Emscripten version 1.38.48 to compile the Vina 1.1.2 codebase to
-WebAssembly. As mentioned in our manuscript, the key to successful compilation
-was to provide Emscripten with the required Boost include files. We used this
-command to compile the Boost libraries:
+We used Emscripten to compile the Vina 1.2.3 codebase to WebAssembly. As
+mentioned in our manuscript, the key to successful compilation was to provide
+Emscripten with the required Boost include files. We used this command to
+compile the Boost libraries:
 
 `./bjam link=static variant=release threading=multi runtime-link=static thread
 program_options filesystem system serialization`
@@ -312,7 +310,7 @@ modifying the Vina Makefile. Specifically, the included headers had to be
 linked/copied under `<emsdk_path>/fastcomp/emscripten/system/include/`.
 
 A detailed description of this process is beyond the scope of this README
-file, though many helpful tips have been posed online.
+file, though many helpful tips have been posed online. -->
 
 ## Notes on User Analytics ##
 

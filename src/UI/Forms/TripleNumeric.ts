@@ -3,7 +3,7 @@
 // details. Copyright 2020 Jacob D. Durrant.
 
 
-declare var Vue;
+declare let Vue: any;
 
 /**
  * Setup the triple-numeric-input Vue commponent.

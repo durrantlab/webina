@@ -2,8 +2,10 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../../Vue/Store";
 
-declare var Vue;
+
+declare let Vue: any;
 
 /** An object containing the vue-component computed functions. */
 let computedFunctions = {
@@ -11,7 +13,7 @@ let computedFunctions = {
      * the value meets min/max requirements, etc.*/
     "val": {
         get(): any {
-            return this.$store.state["vinaParams"][this["id"]];
+            return store.state["vinaParams"][this["id"]];
         },
 
         set(val: any): void {
@@ -20,7 +22,7 @@ let computedFunctions = {
             if (isNaN(val)) {
                 val = undefined;
             }
-            this.$store.commit("setVinaParam", {
+            store.commit("setVinaParam", {
                 name: this["id"],
                 val: val
             });
@@ -28,7 +30,7 @@ let computedFunctions = {
             // Determine if it is valid. First, make sure there's
             // something here if its required.
             let valid = true;
-            let scoreOnly = this.$store.state["vinaParams"]["score_only"];
+            let scoreOnly = store.state["vinaParams"]["score_only"];
             if ((this["required"] === true) && (scoreOnly !== true)) {
                 this["invalidMsg"] = "This field is required.";
                 valid = val !== undefined;
@@ -45,7 +47,7 @@ let computedFunctions = {
                 valid = false;
             }
 
-            this.$store.commit("setValidationParam", {
+            store.commit("setValidationParam", {
                 name: this["id"],
                 val: valid
             });
@@ -69,8 +71,8 @@ let computedFunctions = {
      * @returns boolean  True if it is valid, false otherwise.
      */
     "isValid"(): boolean {
-        let val = this.$store.state["validation"][this["id"]];
-        return val;
+        // @ts-ignore
+        return store.state["validation"][this["id"]];
     }
 }
 
@@ -78,20 +80,29 @@ let computedFunctions = {
  * The vue-component mounted function.
  * @returns void
  */
-function mountedFunction(): void {
+function mountedFunction(): void {   
+    // @ts-ignore
+    const id = this["id"];
+    
+    // @ts-ignore
+    const required = this["required"];
+
+    // @ts-ignore
+    const defaultVal = this["default"];
+
     // Always start by assuming it validates fine.
-    if (this.$store.state["validation"][this["id"]] === undefined) {
-        this.$store.commit("setValidationParam", {
-            name: this["id"],
-            val: !this["required"]
+    if (store.state["validation"][id] === undefined) {
+        store.commit("setValidationParam", {
+            name: id,
+            val: !required
         });
     }
 
     // Set value if it is given.
-    if (this["default"] !== undefined) {
-        this.$store.commit("setVinaParam", {
-            name: this["id"],
-            val: this["default"]
+    if (defaultVal !== undefined) {
+        store.commit("setVinaParam", {
+            name: id,
+            val: defaultVal
         });
     }
 }

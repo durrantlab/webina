@@ -7,10 +7,10 @@ let forDev = {
     mode: 'development',
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: '../../dist',
+        // contentBase: '../../dist',
         hot: false,  // This breaks webworkers if true.
         liveReload: true,
-        writeToDisk: true,
+        // writeToDisk: true,
         headers: {
             "Cross-Origin-Opener-Policy": "same-origin",
             "Cross-Origin-Embedder-Policy": "require-corp"
@@ -23,6 +23,8 @@ let forDev = {
 
 // let webworkerFinal = merge(webworker, forDev);
 let nonWebworkerFinal = merge(notWebworker, forDev);
+
+console.log(nonWebworkerFinal);
 
 // module.exports = [webworkerFinal, nonWebworkerFinal];
 module.exports = [nonWebworkerFinal];

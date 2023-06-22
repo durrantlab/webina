@@ -2,8 +2,10 @@
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
 // details. Copyright 2020 Jacob D. Durrant.
 
+import { store } from "../../Vue/Store";
 
-declare var Vue;
+
+declare let Vue: any;
 
 /** An object containing the vue-component methods functions. */
 let methodsFunctions = {
@@ -18,7 +20,8 @@ let methodsFunctions = {
         const validateVarsLen = validateVars.length;
         for (let i = 0; i < validateVarsLen; i++) {
             const validateVar = validateVars[i];
-            this.$store.commit("setValidationParam", {
+            // @ts-ignore
+            store.commit("setValidationParam", {
                 name: validateVar,
                 val: true
             });
@@ -26,22 +29,22 @@ let methodsFunctions = {
 
         let promise = new Promise((resolve, reject) => {
             setTimeout(() => {
-                this.$store.commit("setVar", {
+                store.commit("setVar", {
                     name: "receptorContents",
-                    val: this.$store.state["receptorContentsExample"]
+                    val: store.state["receptorContentsExample"]
                 });
-                this.$store.commit("setVar", {
+                store.commit("setVar", {
                     name: "outputContents",
-                    val: this.$store.state["outputContentsExample"]
+                    val: store.state["outputContentsExample"]
                 });
-                this.$store.commit("setVar", {
+                store.commit("setVar", {
                     name: "crystalContents",
-                    val: this.$store.state["crystalContentsExample"]
+                    val: store.state["crystalContentsExample"]
                 });
 
                 resolve(undefined);
             }, 100);
-        })
+        });
 
         this["onSubmitClick"](null, promise);
     },
@@ -54,10 +57,10 @@ let methodsFunctions = {
      *                                           from.
      * @returns void
      */
-    "onSubmitClick"(e: any, promise: Promise<any>=undefined): void {
+    "onSubmitClick"(e: any, promise: Promise<any> | undefined=undefined): void {
         if (this["validate"]() === true) {
             // Disable some tabs
-            this.$store.commit("disableTabs", {
+            store.commit("disableTabs", {
                 "parametersTabDisabled": true,
                 "runningTabDisabled": true,
                 "existingVinaOutputTabDisabled": true,
@@ -67,17 +70,17 @@ let methodsFunctions = {
 
             // Switch to that tab.
             Vue.nextTick(() => {
-                this.$store.commit("setVar", {
+                store.commit("setVar", {
                     name: "tabIdx",
                     val: 3
                 });
 
                 if (promise !== undefined) {
                     promise.then(() => {
-                        this.$store.commit("outputToData");
+                        store.commit("outputToData");
                     });
                 } else {
-                    this.$store.commit("outputToData");
+                    store.commit("outputToData");
                 }
             });
         }
@@ -89,9 +92,9 @@ let methodsFunctions = {
      * @returns boolean  True if everything is valid, false otherwise.
      */
     "validate"(): boolean {
-        let validations = this.$store.state["validation"];
+        let validations = store.state["validation"];
 
-        let badParams = [];
+        let badParams: string[] = [];
         if (validations["receptor"] === false) {
             badParams.push("receptor");
         }
@@ -102,7 +105,7 @@ let methodsFunctions = {
         let validate = badParams.length === 0;
 
         if (validate === false) {
-            this.$store.commit("openModal", {
+            store.commit("openModal", {
                 title: "Invalid Parameters!",
                 body: "<p>Please correct the following parameter(s) before continuing: <code>" + badParams.join(" ") + "</code></p>"
             });
