@@ -83,7 +83,7 @@ module.exports = merge(common, {
                 },
                 {
                     from: "src/Webina/vina.js",
-                    to: "Webina/vina.js",
+                    to: "Webina/vina.1.0.5.js",
                 },
                 {
                     from: "src/Webina/vina.worker.js",

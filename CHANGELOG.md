@@ -1,6 +1,13 @@
 Changes
 =======
 
+1.0.5
+-----
+
+* Implemented cache busting so users of previous versions don't get errors when
+  they load the new version.
+* Updated copyright to 2023.
+
 1.0.4
 -----
 

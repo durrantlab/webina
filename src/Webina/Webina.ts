@@ -1,11 +1,11 @@
 // This file is part of Webina, released under the Apache 2.0 License. See
 // LICENSE.md or go to https://opensource.org/licenses/Apache-2.0 for full
-// details. Copyright 2020 Jacob D. Durrant.
+// details. Copyright 2023 Jacob D. Durrant.
 
-// There are a few variables and functions from vina.js that I want to easily
-// access from here.
+// There are a few variables and functions from vina.1.0.5.js that I want to
+// easily access from here.
 
-let VERSION = "1.04";
+let VERSION = "1.05";
 console.log("Webina Library " + VERSION);
 console.log("    Compiled from Vina 1.2.3 codebase:");
 console.log("    http://vina.scripps.edu/");
@@ -62,7 +62,7 @@ export function start(
         const fileName = [
             // "Webina.js",
             // "vina.html.mem",
-            "vina.js",
+            "vina.1.0.5.js",
             "vina.worker.js",
             "vina.wasm",
         ][i];
@@ -114,7 +114,7 @@ export function start(
                 noInitialRun: true,
                 locateFile: (path: string) => {
                     // console.log(path);
-                    return `Webina/${path}`;
+                    return `Webina/${path}?${VERSION}`;
                 },
                 preRun: [
                     function (This: any) {
